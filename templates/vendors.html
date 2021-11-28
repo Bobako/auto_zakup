@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="{{url_for('static', filename='new_el_button.js')}}"></script>
+    <script src="{{url_for('static', filename='vendors.js')}}"></script>
+    <title>Vendors</title>
+</head>
+<body>
+<main>
+    <h1>Поставщики</h1>
+    <div id="vendors">
+        <form id="vendors_form" action="" method="post">
+            {%for vendor in vendors%}
+            <div class="db_el">
+
+                <input type="text" name="{{vendor.id}}:name" placeholder="Название" value="{{vendor.name}}">
+                <input type="text" name="{{vendor.id}}:tg_id" placeholder="ID чата" value="{{vendor.tg_id}}">
+                <select name="{{vendor.id}}:schedule">
+                    <option>День поставок</option>
+                    {%for i in range(days|length)%}
+                    {%if vendor.schedule == i%}
+                    <option value="{{i}}" selected>{{days[i]}}</option>
+                    {%else%}
+                    <option value="{{i}}">{{days[i]}}</option>
+                    {%endif%}
+                    {%endfor%}
+                </select>
+                <input class="right " type="checkbox" id="delete" name="{{vendor.id}}:delete">
+                <label class="right " for="delete">Удалить</label>
+                <br>
+
+
+                <input class="hidden product" type="text" name="{{vendor.id}}:products_ids"
+                       value="{%for product in vendor.products%}{{product.id}}:{%endfor%}">
+
+                <div class="multi_box">
+                    {%for product in vendor.products%}
+                    <span class="multi_el" id = "{{product.id}}" onclick="removeElement(this, 'product')">
+                        {{product.name}}
+                    </span>
+                    {%endfor%}
+
+                    <select onchange="addElement(this, 'product')">
+                        <option value="placeholder">Новый товар</option>
+                        {%for product in products%}
+                        <option value={{product.id}}>{{product.name}}</option>
+                        {%endfor%}
+                    </select>
+
+                </div>
+
+
+                <input class="hidden facility" type="text" name="{{vendor.id}}:facilities_ids"
+                       value="{%for facility in vendor.facilities%}{{facility.id}}:{%endfor%}">
+                <div class="multi_box right">
+                    {%for facility in vendor.facilities%}
+                    <span class="multi_el" id = "{{facility.id}}" onclick="removeElement(this, 'facility')">
+                        {{facility.name}}
+                    </span>
+                    {%endfor%}
+
+                    <select onchange="addElement(this, 'facility')">
+                        <option value="placeholder">Новое заведение</option>
+                        {%for facility in facilities%}
+                        <option value={{facility.id}}>{{facility.name}}</option>
+                        {%endfor%}
+                    </select>
+
+                </div>
+
+            </div>
+            {%endfor%}
+
+            <div id="new_el_div">
+
+            </div>
+
+            <input class="micro_btn right" type="submit" value="Сохранить">
+        </form>
+        <button class="micro_btn" id="new_el_button">Новый поставщик</button>
+
+
+        <div class="template">
+            <input type="text" name="NEW:name" placeholder="Название">
+            <input type="text" name="NEW:tg_id" placeholder="ID чата">
+            <select name="NEW:schedule">
+                <option>День поставок</option>
+                {%for i in range(days|length)%}
+                <option value="{{i}}">{{days[i]}}</option>
+                {%endfor%}
+            </select>
+            <br>
+
+
+            <input class="hidden product" type="text" name="NEW:products_ids"
+                   value="">
+
+            <div class="multi_box">
+                <select onchange="addElement(this, 'product')">
+                    <option value="placeholder">Новый товар</option>
+                    {%for product in products%}
+                    <option value={{product.id}}>{{product.name}}</option>
+                    {%endfor%}
+                </select>
+
+            </div>
+
+
+            <input class="hidden facility" type="text" name="NEW:facilities_ids"
+                   value="">
+            <div class="multi_box right">
+                <select onchange="addElement(this, 'facility')">
+                    <option value="placeholder">Новое заведение</option>
+                    {%for facility in facilities%}
+                    <option value={{facility.id}}>{{facility.name}}</option>
+                    {%endfor%}
+                </select>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+</main>
+
+<nav>
+    <button class="nav_button"></button>
+    <br>
+    <div>
+        <a href="{{url_for('index')}}">Заказы</a><br>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
+        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
+        <a href="{{url_for('users_page')}}">Пользователи</a><br>
+        <a href="{{url_for('products_page')}}">Товары</a><br>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
+        <a href="{{url_for('stats_page')}}">Статистика</a><br>
+        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
+        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    </div>
+</nav>
+
+</body>
+</html>

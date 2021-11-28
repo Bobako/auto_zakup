@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="{{url_for('static', filename='new_el_button.js')}}"></script>
+    <title>Users</title>
+</head>
+<body>
+<main>
+    <h1>Пользователи</h1>
+    <div id="users">
+        <form id="users_form" action="" method="post">
+            {%for user in users%}
+            <div class="db_el">
+                <input type="text" name="{{user.id}}:name" placeholder="Имя" value="{{user.name}}">
+                <input type="text" name="{{user.id}}:surname" placeholder="Фамилия" value="{{user.surname}}">
+                <input type="text" name="{{user.id}}:position" placeholder="Должность" value="{{user.position}}">
+                <select class="short" name="{{user.id}}:facility_name">
+                    <option>Заведение</option>
+                    {%for facility in facilities%}
+                    {%if user.facility.name == facility.name%}
+                    <option selected>{{facility.name}}</option>
+                    {%else%}
+                    <option>{{facility.name}}</option>
+                    {%endif%}
+                    {%endfor%}
+                </select>
+                <input type="text" name="{{user.id}}:code" placeholder="ПИН-код" value="{{user.code}}">
+                {%if user.is_admin%}
+                <input type="checkbox" id="is_admin" name="{{user.id}}:is_admin" checked>
+                {%else%}
+                <input type="checkbox" id="is_admin" name="{{user.id}}:is_admin">
+                {%endif%}
+                <label for="is_admin">Админ</label>
+                <input type="checkbox" id="delete" name="{{user.id}}:delete">
+                <label for="delete">Удалить</label>
+
+            </div>
+
+
+            {%endfor%}
+            <div id="new_el_div">
+
+            </div>
+            <p class="warning">
+                {% with message = get_flashed_messages() %}
+                {% if message%}
+                {{message[0]}}
+                {% endif %}
+                {% endwith %}
+            </p>
+
+            <input class="micro_btn right" type="submit" value="Сохранить">
+        </form>
+        <button class="micro_btn" id="new_el_button">Новый пользователь</button>
+        <div class="template">
+            <input type="text" name="NEW:name" placeholder="Имя">
+            <input type="text" name="NEW:surname" placeholder="Фамилия">
+            <input type="text" name="NEW:position" placeholder="Должность">
+            <select class="short" name="NEW:facility_name">
+                <option>Заведение</option>
+                {%for facility in facilities%}
+                <option>{{facility.name}}</option>
+                {%endfor%}
+            </select>
+            <input type="text" name="NEW:code" placeholder="ПИН-код">
+            <input type="checkbox" id="is_admin" name="NEW:is_admin">
+            <label for="is_admin">Админ</label>
+        </div>
+
+
+    </div>
+</main>
+
+<nav>
+    <button class="nav_button"></button>
+    <br>
+    <div>
+        <a href="{{url_for('index')}}">Заказы</a><br>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
+        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
+        <a href="{{url_for('users_page')}}">Пользователи</a><br>
+        <a href="{{url_for('products_page')}}">Товары</a><br>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
+        <a href="{{url_for('stats_page')}}">Статистика</a><br>
+        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
+        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    </div>
+</nav>
+
+</body>
+</html>

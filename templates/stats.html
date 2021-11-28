@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <title>Stats</title>
+</head>
+<body>
+<main>
+    <h1>Статистика товаров</h1>
+    <div class="db_el paddles">
+        <div class="order_header">
+            <form method="post">
+                <input type="submit" value="Изменить порядок сортировки">
+            </form>
+        </div>
+        <p class="stat">
+            {%for product in products%}
+            {{product.name}} - заказов: {{product.orders_count}}, общее количество: {{product.orders_amount}}
+            {{product.unit.designation}}<br>
+            {%endfor%}
+        </p>
+    </div>
+</main>
+
+<nav>
+    <button class="nav_button"></button>
+    <br>
+    <div>
+        <a href="{{url_for('index')}}">Заказы</a><br>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
+        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
+        <a href="{{url_for('users_page')}}">Пользователи</a><br>
+        <a href="{{url_for('products_page')}}">Товары</a><br>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
+        <a href="{{url_for('stats_page')}}">Статистика</a><br>
+        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
+        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    </div>
+</nav>
+
+</body>
+</html>
