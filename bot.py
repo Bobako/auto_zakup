@@ -11,16 +11,6 @@ bot = TeleBot(BOT_TOKEN)
 class Bot:
     def __init__(self, session):
         self.session = session
-        t = Thread(target=self.run)
-        t.start()
-
-    def run(self):
-        print("Бот запущен")
-        while True:
-            try:
-                bot.infinity_polling()
-            except Exception:
-                pass
 
     def noti_admin(self, msg):
         noti = self.session.query(Noti).one()
@@ -41,8 +31,3 @@ class Bot:
             return str(type(e)) + " " + str(e.args)
         else:
             return True
-
-
-@bot.message_handler(commands=["id"])
-def id_(message):
-    bot.reply_to(message, message.chat.id)
