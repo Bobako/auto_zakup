@@ -9,7 +9,6 @@ from db_handler import *
 from bot import Bot
 
 app = Flask(__name__)
-app.secret_key = b'rickroll'
 db = Handler()
 bot = Bot(db.session)
 login_manager = LoginManager()
