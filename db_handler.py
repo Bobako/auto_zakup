@@ -6,9 +6,8 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, T
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-sys.path.append("./cfg.py")
 
-from cfg import *
+from FlaskApp.cfg import *
 
 Base = declarative_base()
 

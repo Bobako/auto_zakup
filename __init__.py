@@ -4,11 +4,10 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
-sys.path.append("./db_handler.py")
-sys.path.append("./bot.py")
 
-from db_handler import *
-from bot import Bot
+
+from FlaskApp.db_handler import *
+from FlaskApp.bot import Bot
 
 app = Flask(__name__)
 db = Handler()
