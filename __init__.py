@@ -1,10 +1,12 @@
-import datetime
+import sys
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
-from cfg import *
+sys.path.append("./db_handler.py")
+sys.path.append("./bot.py")
+
 from db_handler import *
 from bot import Bot
 

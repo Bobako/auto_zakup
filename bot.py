@@ -1,6 +1,9 @@
 from threading import Thread
-
+import sys
 from telebot import TeleBot
+
+sys.path.append("./cfg.py")
+sys.path.append("./db_handler.py")
 
 from cfg import *
 from db_handler import Noti

@@ -1,10 +1,12 @@
 import datetime
-import json
+import sys
 
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+
+sys.path.append("./cfg.py")
 
 from cfg import *
 
