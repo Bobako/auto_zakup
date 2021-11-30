@@ -30,8 +30,10 @@
                     {%endif%}
                     {%endfor%}
                 </select>
-                <input class="right " type="checkbox" id="delete" name="{{vendor.id}}:delete">
-                <label class="right " for="delete">Удалить</label>
+                <span class="cb_span">
+                    <input class="norm" type="checkbox" id="delete" name="{{vendor.id}}:delete">
+                    <label class="norm" for="delete">Удалить</label>
+                </span>
                 <br>
 
 
@@ -40,7 +42,7 @@
 
                 <div class="multi_box">
                     {%for product in vendor.products%}
-                    <span class="multi_el" id = "{{product.id}}" onclick="removeElement(this, 'product')">
+                    <span class="multi_el" id="{{product.id}}" onclick="removeElement(this, 'product')">
                         {{product.name}}
                     </span>
                     {%endfor%}
@@ -59,7 +61,7 @@
                        value="{%for facility in vendor.facilities%}{{facility.id}}:{%endfor%}">
                 <div class="multi_box right">
                     {%for facility in vendor.facilities%}
-                    <span class="multi_el" id = "{{facility.id}}" onclick="removeElement(this, 'facility')">
+                    <span class="multi_el" id="{{facility.id}}" onclick="removeElement(this, 'facility')">
                         {{facility.name}}
                     </span>
                     {%endfor%}
