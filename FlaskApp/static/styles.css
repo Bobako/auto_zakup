@@ -324,6 +324,11 @@ html {
         outline: none;
     }
 
+    input[disabled]{
+        font-size: 20px;
+        position: relative;
+        bottom: 4px;
+    }
 
     select {
         margin: 10px;
