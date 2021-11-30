@@ -1,6 +1,6 @@
 BOT_TOKEN = "2104797267:AAFp-FX16r1-nogBbN26Zztk9mGGOGLUoP4"
 
-DB_STRING = "sqlite:///FlaskApp/database.db"
+DB_STRING = "sqlite:////var/www/FlaskApp/FlaskApp/database.db"
 
 DEFAULT_ORDER_FORMAT = """Добрый день<br>
 <br>
