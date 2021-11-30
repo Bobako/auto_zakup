@@ -3,12 +3,14 @@ from sqlalchemy import exc, desc, asc
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 from FlaskApp.db_handler import *
+from FlaskApp.bot import Bot
 
 app = Flask(__name__)
 db = Handler()
 login_manager = LoginManager()
 login_manager.init_app(app)
 filter_ = asc
+bot = Bot(db.session)
 
 DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
 
