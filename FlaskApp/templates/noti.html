@@ -16,8 +16,10 @@
         <form method="post">
             <label for="tg_id">ID чата</label>
             <input type="text" id="tg_id" name="tg_id" value="{{noti.tg_id}}" placeholder="ID чата">
+            <span class="cb_span">
             <input type="checkbox" id="send" name="send" {%if noti.send%} checked {%endif%}>
             <label for="send">Отправлять оповещения</label>
+            </span>
             <br>
             <input class="micro_btn right" type="submit" value="Сохранить">
         </form>

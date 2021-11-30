@@ -28,9 +28,10 @@
                     {%endif%}
                     {%endfor%}
                 </select>
-
-                <input class="right norm" type="checkbox" id="delete" name="{{product.id}}:delete">
-                <label class="right norm" for="delete">Удалить</label>
+                <span class="cb_span">
+                <input class=" norm" type="checkbox" id="{{product.id}}:delete" name="{{product.id}}:delete">
+                <label class=" norm" for="{{product.id}}:delete">Удалить</label>
+                </span>
             </div>
             {%endfor%}
             <div id="new_el_div">

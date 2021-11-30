@@ -19,8 +19,11 @@
                 <input class="long" type="text" name="{{unit.id}}:name" placeholder="Название" value="{{unit.name}}">
                 <input type="text" name="{{unit.id}}:designation" placeholder="Единицы"
                        value="{{unit.designation}}">
-                <input class="right norm" type="checkbox" id="delete" name="{{unit.id}}:delete">
-                <label class="right norm" for="delete">Удалить</label>
+
+                <span class="cb_span">
+                <input class="right norm" type="checkbox" id="{{unit.id}}:delete" name="{{unit.id}}:delete">
+                <label class="right norm" for="{{unit.id}}:delete">Удалить</label>
+                </span>
             </div>
 
             {%endfor%}

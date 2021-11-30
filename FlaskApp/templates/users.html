@@ -34,15 +34,15 @@
                 <span class="cb_span">
                 {%if user.is_admin%}
 
-                <input type="checkbox" id="is_admin" name="{{user.id}}:is_admin" checked>
+                <input type="checkbox" id="{{user.id}}:is_admin" name="{{user.id}}:is_admin" checked>
                 {%else%}
-                <input type="checkbox" id="is_admin" name="{{user.id}}:is_admin">
+                <input type="checkbox" id="{{user.id}}:is_admin" name="{{user.id}}:is_admin">
                 {%endif%}
-                <label for="is_admin">Админ</label>
+                <label for="{{user.id}}:is_admin">Админ</label>
                 </span>
                 <span class="cb_span">
-                <input type="checkbox" id="delete" name="{{user.id}}:delete">
-                <label for="delete">Удалить</label>
+                <input type="checkbox" id="{{user.id}}:delete" name="{{user.id}}:delete">
+                <label for="{{user.id}}:delete">Удалить</label>
                      </span>
 
             </div>
@@ -76,7 +76,7 @@
             <input type="text" name="NEW:code" placeholder="ПИН-код">
             <span class="cb_span">
             <input type="checkbox" id="is_admin" name="NEW:is_admin">
-            <label for="is_admin">Админ</label>
+            <label>Админ</label>
             </span>
         </div>
 
