@@ -38,7 +38,7 @@
 
                 </div>
                 {%if user.is_admin%}
-                <input class="micro_btn right" type="submit" name="order:new" value="Подтвердить и отправить">
+                <input class="micro_btn right" type="submit" name="order:new" value="Подтвердить">
                 {%else%}
                 <input class="micro_btn right" type="submit" name="order:new" value="Отправить на рассмотрение">
                 {%endif%}
@@ -66,15 +66,17 @@
 
                 <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
                        placeholder="Поставщик">
-                <input type="text" disabled name="{{product.id}}:vendor_id" value="{{product.vendor.name}}"
+                <input class="short" type="text" disabled name="{{product.id}}:vendor_id"
+                       value="{{product.vendor.name}}"
                        placeholder="Поставщик">
 
-                <input type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                <input class="short" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
-                <input type="text" name="{{product.id}}:amount" value="{{product.amount}}" placeholder="Количество"
+                <input class="short" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                       placeholder="Количество"
                        onchange="checkAmount(this)">
 
-                <input type="text" disabled value="{{product.product.unit.designation}}"
+                <input class="short" type="text" disabled value="{{product.product.unit.designation}}"
                        placeholder="Ед">
                 <br>
 
@@ -83,7 +85,7 @@
 
                 {%if user.is_admin%}
                 <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
-                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Подтвердить и отправить">
+                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Подтвердить">
                 {%else%}
                 {%if order.status != "ORDERED" %}
                 <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
@@ -103,6 +105,32 @@
         <h1>Старые заказы</h1>
         {%for order in orders%}
         <div class="db_el paddles">
+
+            <div class="order_header">
+                Заказ #{{order.id}} для {{order.facility.name}}
+
+                <span class="right">
+                        {% if order.status == "NEW" %} Новый {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
+                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                    </span>
+            </div>
+            {%for product in order.products%}
+
+            <input class="short" type="text" disabled name="{{product.id}}:vendor_id"
+                   value="{{product.vendor.name}}"
+                   placeholder="Поставщик">
+
+            <input class="short" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+
+            <input class="short" type="text" disabled name="{{product.id}}:amount" value="{{product.amount}}"
+                   placeholder="Количество">
+
+            <input class="short" type="text" disabled value="{{product.product.unit.designation}}"
+                   placeholder="Ед">
+            <br>
+
+            {%endfor%}
 
         </div>
         {%endfor%}
