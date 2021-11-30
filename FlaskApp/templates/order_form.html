@@ -1,0 +1,15 @@
+{%for vendor in vendors%}
+{%for product in vendor.products%}
+
+<input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Поставщик">
+<input type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Поставщик">
+
+<input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
+<input type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
+
+<input type="text" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
+
+<input type="text" disabled name="NEW:product_designation" value="{{product.unit.designation}}" placeholder="Ед">
+<br>
+{%endfor%}
+{%endfor%}

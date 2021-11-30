@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <title>Order format</title>
+</head>
+<body>
+<main>
+    <h1>Формат заказа для отправки поставщику</h1>
+    <p class=desc>
+        Заказ будет отформатирован в соотвествии с этой формой. <br>
+        Служебные поля, обернутые в двойные фигурные скобки будут заменены на соответствующие значения из БД.<br>
+        Фигурные скобки с символом процента - цикл, выполняющий перебор всех товаров в заказе.<br>
+        Описание некоторых служебных полей:<br>
+        order.id - ID заказа<br>
+        order.facility.name - название заведения для которого предназначен заказ<br>
+        order.facility.address - адрес заведения<br>
+        product.product.name - имя товара<br>
+        product.amount - количество товара<br>
+        product.product.unit.designation - условное обозначения единицы измерения<br>
+        Менять с осторожностью.<br>
+
+    </p>
+    <div class=db_el>
+
+        <form action="" method="post">
+            <p>
+            <textarea name="msg">{{ msg }}</textarea>
+            </p>
+            <input class="micro_btn" type="submit" name="default" value="Сбросить до значения по умолчанию">
+            <input class="micro_btn right" type="submit" name="confirm" value="Сохранить">
+        </form>
+
+    </div>
+</main>
+
+<nav>
+    <button class="nav_button"></button>
+    <br>
+    <div>
+        <a href="{{url_for('index')}}">Заказы</a><br>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
+        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
+        <a href="{{url_for('users_page')}}">Пользователи</a><br>
+        <a href="{{url_for('products_page')}}">Товары</a><br>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
+        <a href="{{url_for('stats_page')}}">Статистика</a><br>
+        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
+        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    </div>
+</nav>
+
+
+</body>
+</html>

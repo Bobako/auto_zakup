@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="{{url_for('static', filename='new_el_button.js')}}"></script>
+    <title>Products</title>
+</head>
+<body>
+<main>
+    <h1>Товары</h1>
+    <div id="products">
+        <form id="products_form" action="" method="post">
+            {%for product in products%}
+            <div class="db_el">
+                <input class="long" type="text" name="{{product.id}}:name" placeholder="Имя" value="{{product.name}}">
+
+                <select class="short" name="{{product.id}}:unit_designation">
+                    <option>Единицы измерения</option>
+                    {%for unit in units%}
+                    {%if product.unit.designation == unit.designation%}
+                    <option selected>{{unit.designation}}</option>
+                    {%else%}
+                    <option>{{unit.designation}}</option>
+                    {%endif%}
+                    {%endfor%}
+                </select>
+
+                <input class="right norm" type="checkbox" id="delete" name="{{product.id}}:delete">
+                <label class="right norm" for="delete">Удалить</label>
+            </div>
+            {%endfor%}
+            <div id="new_el_div">
+
+            </div>
+            <input class="micro_btn right" type="submit" value="Сохранить">
+        </form>
+        <button class="micro_btn" id="new_el_button">Новый товар</button>
+
+        <div class="template">
+            <input class="long" type="text" name="NEW:name" placeholder="Имя">
+
+            <select class="short" name="NEW:unit_designation">
+                <option>Единицы измерения</option>
+                {%for unit in units%}
+                <option>{{unit.designation}}</option>
+                {%endfor%}
+            </select>
+
+        </div>
+
+    </div>
+</main>
+
+<nav>
+    <button class="nav_button"></button>
+    <br>
+    <div>
+        <a href="{{url_for('index')}}">Заказы</a><br>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
+        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
+        <a href="{{url_for('users_page')}}">Пользователи</a><br>
+        <a href="{{url_for('products_page')}}">Товары</a><br>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
+        <a href="{{url_for('stats_page')}}">Статистика</a><br>
+        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
+        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    </div>
+</nav>
+
+</body>
+</html>

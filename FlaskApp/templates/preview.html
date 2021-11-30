@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'styles.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="{{url_for('static', filename='preview.js')}}"></script>
+    <title>Preview</title>
+</head>
+<body>
+<main>
+    <div class=db_el>
+        <input hidden id="order_id" value="{{order.id}}">
+        <form action="" method="post">
+            {%for vendor in vendors%}
+            <p>
+                Сообщение для {{vendor.name}}
+                <textarea name="{{vendor.id}}:msg" id="{{vendor.id}}"></textarea>
+            </p>
+            {%endfor%}
+            <input class="micro_btn" type="submit" value="Назад">
+            <input class="micro_btn right" type="submit" name="order:confirm" value="Подтвердить и отправить">
+        </form>
+
+    </div>
+</main>
+</body>
+</html>
