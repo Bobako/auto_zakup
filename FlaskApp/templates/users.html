@@ -18,7 +18,8 @@
             <div class="db_el">
                 <input type="text" name="{{user.id}}:name" placeholder="Имя" value="{{user.name}}">
                 <input type="text" name="{{user.id}}:surname" placeholder="Фамилия" value="{{user.surname}}">
-                <input type="text" name="{{user.id}}:position" placeholder="Должность" value="{{user.position}}">
+                <input type="text" name="{{user.id}}:position" placeholder="Должность"
+                       value="{{user.position}}">
                 <select class="short" name="{{user.id}}:facility_name">
                     <option>Заведение</option>
                     {%for facility in facilities%}
