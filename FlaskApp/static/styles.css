@@ -43,6 +43,10 @@ html {
 }
 
 
+.inline{
+    display: inline-block;
+}
+
 @media (min-width: 1000px) {
     main {
         width: 1000px;

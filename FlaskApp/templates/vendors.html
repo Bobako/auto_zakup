@@ -40,39 +40,42 @@
                 <input class="hidden product" type="text" name="{{vendor.id}}:products_ids"
                        value="{%for product in vendor.products%}{{product.id}}:{%endfor%}">
 
-                <div class="multi_box">
-                    {%for product in vendor.products%}
-                    <span class="multi_el" id="{{product.id}}" onclick="removeElement(this, 'product')">
+                <div class="inline">
+
+                    <div class="multi_box">
+                        {%for product in vendor.products%}
+                        <span class="multi_el" id="{{product.id}}" onclick="removeElement(this, 'product')">
                         {{product.name}}
                     </span>
-                    {%endfor%}
-
-                    <select onchange="addElement(this, 'product')">
-                        <option value="placeholder">Новый товар</option>
-                        {%for product in products%}
-                        <option value={{product.id}}>{{product.name}}</option>
                         {%endfor%}
-                    </select>
 
-                </div>
+                        <select onchange="addElement(this, 'product')">
+                            <option value="placeholder">Новый товар</option>
+                            {%for product in products%}
+                            <option value={{product.id}}>{{product.name}}</option>
+                            {%endfor%}
+                        </select>
+
+                    </div>
 
 
-                <input class="hidden facility" type="text" name="{{vendor.id}}:facilities_ids"
-                       value="{%for facility in vendor.facilities%}{{facility.id}}:{%endfor%}">
-                <div class="multi_box right">
-                    {%for facility in vendor.facilities%}
-                    <span class="multi_el" id="{{facility.id}}" onclick="removeElement(this, 'facility')">
+                    <input class="hidden facility" type="text" name="{{vendor.id}}:facilities_ids"
+                           value="{%for facility in vendor.facilities%}{{facility.id}}:{%endfor%}">
+                    <div class="multi_box right">
+                        {%for facility in vendor.facilities%}
+                        <span class="multi_el" id="{{facility.id}}" onclick="removeElement(this, 'facility')">
                         {{facility.name}}
                     </span>
-                    {%endfor%}
-
-                    <select onchange="addElement(this, 'facility')">
-                        <option value="placeholder">Новое заведение</option>
-                        {%for facility in facilities%}
-                        <option value={{facility.id}}>{{facility.name}}</option>
                         {%endfor%}
-                    </select>
 
+                        <select onchange="addElement(this, 'facility')">
+                            <option value="placeholder">Новое заведение</option>
+                            {%for facility in facilities%}
+                            <option value={{facility.id}}>{{facility.name}}</option>
+                            {%endfor%}
+                        </select>
+
+                    </div>
                 </div>
 
             </div>
@@ -101,28 +104,29 @@
 
             <input class="hidden product" type="text" name="NEW:products_ids"
                    value="">
+            <div class="inline">
+                <div class="multi_box">
+                    <select onchange="addElement(this, 'product')">
+                        <option value="placeholder">Новый товар</option>
+                        {%for product in products%}
+                        <option value={{product.id}}>{{product.name}}</option>
+                        {%endfor%}
+                    </select>
 
-            <div class="multi_box">
-                <select onchange="addElement(this, 'product')">
-                    <option value="placeholder">Новый товар</option>
-                    {%for product in products%}
-                    <option value={{product.id}}>{{product.name}}</option>
-                    {%endfor%}
-                </select>
-
-            </div>
+                </div>
 
 
-            <input class="hidden facility" type="text" name="NEW:facilities_ids"
-                   value="">
-            <div class="multi_box right">
-                <select onchange="addElement(this, 'facility')">
-                    <option value="placeholder">Новое заведение</option>
-                    {%for facility in facilities%}
-                    <option value={{facility.id}}>{{facility.name}}</option>
-                    {%endfor%}
-                </select>
+                <input class="hidden facility" type="text" name="NEW:facilities_ids"
+                       value="">
+                <div class="multi_box right">
+                    <select onchange="addElement(this, 'facility')">
+                        <option value="placeholder">Новое заведение</option>
+                        {%for facility in facilities%}
+                        <option value={{facility.id}}>{{facility.name}}</option>
+                        {%endfor%}
+                    </select>
 
+                </div>
             </div>
         </div>
 
