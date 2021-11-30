@@ -2,25 +2,25 @@ $(document).ready(function () {
 
     var hidden;
 
-    if ($('body').width() < 1510) {
-        hidden = true;
-        $('nav div').css('left', $('nav div').width() + 30);
-        $('.nav_button').css('left', $('nav div').width() - 16);
-    } else {
+    if ($('body').width() > 1510) {
+        $(".nav_button").removeClass("hiden_nav_button");
+        $("nav div").removeClass("hidden_nav_div");
         hidden = false;
+    } else {
+        hidden = true;
     }
 
     $(".nav_button").click(function () {
         if (hidden) {
-            $('nav div').css('left', '');
-            $('.nav_button').css('left', '');
+            $(".nav_button").removeClass("hiden_nav_button");
+            $("nav div").removeClass("hidden_nav_div");
             hidden = false;
-        } else {
-            hidden = true;
-            $('nav div').css('left', $('nav div').width() + 30);
-            $('.nav_button').css('left', $('nav div').width() - 16);
         }
-
+        else{
+            $(".nav_button").addClass("hiden_nav_button");
+            $("nav div").addClass("hidden_nav_div");
+            hidden = true;
+        }
     });
 
 

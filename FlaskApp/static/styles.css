@@ -42,6 +42,7 @@ html {
     display: none;
 }
 
+
 @media (min-width: 1000px) {
     main {
         width: 1000px;
@@ -191,55 +192,6 @@ html {
         background-size: 24px;
     }
 
-
-    nav {
-        position: absolute;
-        top: 0;
-        right: 0;
-        transition: 0.2s;
-    }
-
-    nav div {
-        background-color: #eaeaea;
-        position: relative;
-        bottom: 42px;
-        border-radius: 0 0 0 5px;
-        box-sizing: border-box;
-        padding: 3px 10px 10px;
-    }
-
-    .nav_button {
-        background-color: #eaeaea;
-        background-image: url("settings.png");
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 32px;
-        height: 42px;
-        width: 42px;
-        position: relative;
-        right: 37px;
-        outline: none;
-        border: none;
-        border-radius: 5px 0 0 5px;
-    }
-
-    .nav_button:hover {
-        cursor: pointer;
-    }
-
-
-    nav a {
-        display: inline-block;
-        margin: 5px;
-        padding: 0px 5px;
-        outline: none;
-        text-decoration: none;
-        color: black;
-        font-size: 20px;
-        border: 2px solid #b0b0b0;
-        border-radius: 4px;
-    }
-
     .orders_cat {
         width: 100%;
         min-height: 100px;
@@ -285,6 +237,62 @@ html {
         display: block;
         margin: 5px;
     }
+
+    nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    nav a {
+        display: block;
+        padding: 5px;
+        color: black;
+        font-size: 20px;
+
+    }
+
+    nav div {
+
+        background-color: #d2d2d2;
+        position: relative;
+        bottom: 50px;
+        border-radius: 0 0 0 5px;
+        padding: 10px;
+        width: 260px;
+        opacity: 1.0;
+        transition: 0.1s;
+    }
+
+    .hidden_nav_div {
+        display: none;
+    }
+
+    .nav_button {
+        transition: 0.1s;
+        width: 50px;
+        height: 50px;
+        background-image: url("settings.png");
+        background-size: 40px;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: none;
+        background-color: #d2d2d2;
+        border-radius: 5px 0 0 5px;
+        position: absolute;
+        top: 0;
+        right: 280px;
+
+    }
+
+    .nav_button:hover {
+        cursor: pointer;
+    }
+
+    .hiden_nav_button {
+        right: 0;
+    }
+
 }
 
 
@@ -349,13 +357,6 @@ html {
         text-align: center;
         transition: 0.2s;
     }
-
-    .micro_btn:hover {
-        width: 420px;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-
 
     .right {
         float: right;
@@ -422,54 +423,6 @@ html {
     }
 
 
-    nav {
-        position: absolute;
-        top: 0;
-        right: 0;
-        transition: 0.2s;
-    }
-
-    nav div {
-        background-color: #eaeaea;
-        position: relative;
-        bottom: 42px;
-        border-radius: 0 0 0 5px;
-        box-sizing: border-box;
-        padding: 3px 10px 10px;
-    }
-
-    .nav_button {
-        background-color: #eaeaea;
-        background-image: url("settings.png");
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 32px;
-        height: 42px;
-        width: 42px;
-        position: relative;
-        right: 37px;
-        outline: none;
-        border: none;
-        border-radius: 5px 0 0 5px;
-    }
-
-    .nav_button:hover {
-        cursor: pointer;
-    }
-
-
-    nav a {
-        display: inline-block;
-        margin: 5px;
-        padding: 0px 5px;
-        outline: none;
-        text-decoration: none;
-        color: black;
-        font-size: 20px;
-        border: 2px solid #b0b0b0;
-        border-radius: 4px;
-    }
-
     .orders_cat {
         width: 100%;
         min-height: 100px;
@@ -514,5 +467,61 @@ html {
     .stat {
         display: block;
         margin: 5px;
+    }
+
+
+    nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    nav a {
+        display: block;
+        padding: 5px;
+        color: black;
+        font-size: 20px;
+
+    }
+
+    nav div {
+
+        background-color: #d2d2d2;
+        position: relative;
+        bottom: 50px;
+        border-radius: 0 0 0 5px;
+        padding: 10px;
+        width: 260px;
+        opacity: 1.0;
+        transition: 0.1s;
+    }
+
+    .hidden_nav_div {
+        display: none;
+    }
+
+    .nav_button {
+        transition: 0.1s;
+        width: 50px;
+        height: 50px;
+        background-image: url("settings.png");
+        background-size: 40px;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: none;
+        background-color: #d2d2d2;
+        border-radius: 5px 0 0 5px;
+        position: absolute;
+        top: 0;
+        right: 280px;
+
+    }
+
+    .nav_button:hover {
+        cursor: pointer;
+    }
+
+    .hiden_nav_button {
+        right: 0;
     }
 }

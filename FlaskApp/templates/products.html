@@ -56,19 +56,18 @@
 </main>
 
 <nav>
-    <button class="nav_button"></button>
-    <br>
-    <div>
-        <a href="{{url_for('index')}}">Заказы</a><br>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a><br>
-        <a href="{{url_for('facilities_page')}}">Заведения</a><br>
-        <a href="{{url_for('users_page')}}">Пользователи</a><br>
-        <a href="{{url_for('products_page')}}">Товары</a><br>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a><br>
-        <a href="{{url_for('stats_page')}}">Статистика</a><br>
-        <a href="{{url_for('noti_page')}}">Оповещения</a><br>
-        <a href="{{url_for('order_format')}}">Формат заказа</a><br>
-        <a href="{{url_for('login')}}">Сменить аккаунт</a><br>
+    <button class="nav_button hiden_nav_button"></button>
+    <div class="hidden_nav_div">
+        <a href="{{url_for('index')}}">Заказы</a>
+        <a href="{{url_for('vendors_page')}}">Поставщики</a>
+        <a href="{{url_for('facilities_page')}}">Заведения</a>
+        <a href="{{url_for('users_page')}}">Пользователи</a>
+        <a href="{{url_for('products_page')}}">Товары</a>
+        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('stats_page')}}">Статистика</a>
+        <a href="{{url_for('noti_page')}}">Оповещения</a>
+        <a href="{{url_for('order_format')}}">Формат заказа</a>
+        <a href="{{url_for('login')}}">Сменить аккаунт</a>
     </div>
 </nav>
 
