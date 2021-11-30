@@ -231,7 +231,7 @@ def order_format():
         msg = msg.replace("}\n", "}")
         db.session.query(MSGFormat).one().msg = msg
         db.session.commit()
-        with open("templates/formatted_order.html", "w") as file:
+        with open("/var/www/FlaskApp/FlaskApp/templates/formatted_order.html", "w", encoding='utf-8') as file:
             file.write(msg)
     msg = db.session.query(MSGFormat).one().msg
     return render_template("order_format.html", msg=msg)
