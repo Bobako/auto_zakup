@@ -400,10 +400,12 @@ html {
     label {
         font-size: 24px;
         margin-right: 10px;
+
     }
 
     .cb_span {
         display: inline-block;
+        padding-bottom: 20px;
     }
 
     h1 {

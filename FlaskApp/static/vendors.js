@@ -44,7 +44,7 @@ function fell(btn) {
         let position = $(btn).offset();
         $(div).removeClass("fell_hidden");
         $(div).css("top", position.top+btn.high);
-        $(div).css("left", position.left);
+        $(div).css("left", position.left - 60);
     } else {
         $(div).addClass("fell_hidden");
     }
