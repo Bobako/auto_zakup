@@ -43,8 +43,37 @@ html {
 }
 
 
-.inline{
+.inline {
     display: inline-block;
+}
+
+.fell_btn {
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #eaeaea;
+    border: 1px solid #b0b0b0;
+    box-sizing: border-box;
+    min-width: 90px;
+    height: 30px;
+    transition: 0.2s;
+}
+
+.fell_btn:hover{
+    cursor: pointer;
+}
+
+.fell_div{
+    border: 1px solid #b0b0b0;
+    background-color: #eaeaea;
+    border-radius: 5px;
+    padding: 5px;
+    position:absolute;
+}
+
+.fell_hidden{
+
+    display: none;
 }
 
 @media (min-width: 1000px) {
@@ -258,11 +287,12 @@ html {
 
     nav div {
 
-        background-color: #d2d2d2;
+        background-color: #eaeaea;
         position: relative;
         border-radius: 0 0 0 5px;
         padding: 10px;
         width: 260px;
+        min-height: 200px;
         opacity: 1.0;
         transition: 0.1s;
     }
@@ -280,7 +310,7 @@ html {
         background-repeat: no-repeat;
         background-position: center;
         border: none;
-        background-color: #d2d2d2;
+        background-color: #eaeaea;
         border-radius: 5px 0 0 5px;
         position: absolute;
         top: 0;
@@ -328,7 +358,7 @@ html {
         outline: none;
     }
 
-    input[disabled]{
+    input[disabled] {
         font-size: 20px;
         position: relative;
         bottom: 4px;
@@ -514,9 +544,9 @@ html {
 
     nav div {
 
-        background-color: #d2d2d2;
+        background-color: #eaeaea;
         position: relative;
-
+        min-height: 200px;
         border-radius: 0 0 0 5px;
         padding: 10px;
         width: 260px;
@@ -537,7 +567,7 @@ html {
         background-repeat: no-repeat;
         background-position: center;
         border: none;
-        background-color: #d2d2d2;
+        background-color: #eaeaea;
         border-radius: 5px 0 0 5px;
         position: absolute;
         top: 0;

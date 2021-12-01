@@ -7,8 +7,9 @@ function addElement(select, el_type) {
     if (el_id == "placeholder") {
         return;
     }
-    var el_name = $(select).find('option:selected')
-    el_name = el_name.text();
+    var el = $(select).find('option:selected');
+    var el_name = el.text();
+    $(el).remove();
     var multi_box = $(select).parent();
     var select_ = $(select);
     $(select).remove()
@@ -24,12 +25,27 @@ function addElement(select, el_type) {
 
 function removeElement(element, el_type) {
     var el_id = element.id;
+    console.log(element.textContent);
     var multi_box = $(element).parent();
+    var selector = multi_box.find('select');
+    selector.append("<option value='" + el_id + "'>" + element.textContent + "</option>");
     var form = multi_box.parent().find('.' + el_type);
     var ids = String(form.val()).split(":");
-    console.log(ids);
     ids.splice(ids.indexOf(el_id), 1);
-    console.log(ids);
     form.val(ids.join(":"));
     $(element).remove();
+}
+
+
+function fell(btn) {
+    let div = $(btn).parent().find(".fell_div");
+    let hidden = $(div).hasClass("fell_hidden");
+    if (hidden) {
+        let position = $(btn).offset();
+        $(div).removeClass("fell_hidden");
+        $(div).css("top", position.top+btn.high);
+        $(div).css("left", position.left);
+    } else {
+        $(div).addClass("fell_hidden");
+    }
 }

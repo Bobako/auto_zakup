@@ -31,6 +31,8 @@ def load_user(user_id):
 
 @app.route("/login", methods=['post', 'get'])
 def login():
+    if current_user:
+        db_logout(current_user)
     if request.method == "POST":
         code = request.form.get("code")
         try:
@@ -156,6 +158,7 @@ def vendors_page():
 
     if request.method == "POST":
         vendors = parse_forms(request.form)
+
         for vendor in vendors.values():
             vendor["products"] = []
             for product_id in vendor['products_ids'].split(":"):
@@ -163,6 +166,14 @@ def vendors_page():
                     if (product := db.session.query(Product).filter(
                             Product.id == product_id).one()) not in vendor["products"]:
                         vendor["products"].append(product)
+            schedule = ''
+            for key in vendor:
+                if "schedule" in key:
+                    schedule += key[-1]
+            if schedule:
+                vendor["schedule"] = int(schedule)
+            else:
+                vendor["schedule"] = None
             vendor["facilities"] = []
             for facility_id in vendor['facilities_ids'].split(":"):
                 if facility_id:
@@ -171,6 +182,9 @@ def vendors_page():
                         vendor["facilities"].append(facility)
             vendor.pop('products_ids')
             vendor.pop('facilities_ids')
+            for i in range(7):
+                if "schedule"+str(i) in vendor:
+                    vendor.pop("schedule"+str(i))
         update_objs(vendors, Vendor)
 
     return render_template("vendors.html", vendors=db.session.query(Vendor).all(),
@@ -379,7 +393,6 @@ def db_login(user):
 
 def db_logout(user):
     logout_user()
-    user.is_authenticated = True
     db.session.commit()
 
 

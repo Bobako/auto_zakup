@@ -138,10 +138,11 @@
     {%endif%}
 </main>
 
-{%if user.is_admin%}
+
 <nav>
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
+        {%if user.is_admin%}
         <a href="{{url_for('index')}}">Заказы</a>
         <a href="{{url_for('vendors_page')}}">Поставщики</a>
         <a href="{{url_for('facilities_page')}}">Заведения</a>
@@ -151,10 +152,11 @@
         <a href="{{url_for('stats_page')}}">Статистика</a>
         <a href="{{url_for('noti_page')}}">Оповещения</a>
         <a href="{{url_for('order_format')}}">Формат заказа</a>
+        {%endif%}
         <a href="{{url_for('login')}}">Сменить аккаунт</a>
     </div>
 </nav>
-{%endif%}
+
 
 </body>
 </html>

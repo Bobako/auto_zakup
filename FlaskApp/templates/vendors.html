@@ -20,16 +20,17 @@
 
                 <input type="text" name="{{vendor.id}}:name" placeholder="Название" value="{{vendor.name}}">
                 <input type="text" name="{{vendor.id}}:tg_id" placeholder="ID чата" value="{{vendor.tg_id}}">
-                <select name="{{vendor.id}}:schedule">
-                    <option>День поставок</option>
+                <button type="button" class="fell_btn" onclick="fell(this)">Расписание</button>
+                <div class="fell_div fell_hidden">
                     {%for i in range(days|length)%}
-                    {%if vendor.schedule == i%}
-                    <option value="{{i}}" selected>{{days[i]}}</option>
+                    {%if i in vendor.get_sch()%}
+                    <input type="checkbox" id="{{vendor.id}}:schedule{{i}}" checked name="{{vendor.id}}:schedule{{i}}">
                     {%else%}
-                    <option value="{{i}}">{{days[i]}}</option>
+                    <input type="checkbox" id="{{vendor.id}}:schedule{{i}}" name="{{vendor.id}}:schedule{{i}}">
                     {%endif%}
+                    <label for="{{vendor.id}}:schedule{{i}}">{{days[i]}}</label><br>
                     {%endfor%}
-                </select>
+                </div>
                 <span class="cb_span">
                     <input class="norm" type="checkbox" id="delete" name="{{vendor.id}}:delete">
                     <label class="norm" for="delete">Удалить</label>
@@ -37,10 +38,9 @@
                 <br>
 
 
-                <input class="hidden product" type="text" name="{{vendor.id}}:products_ids"
-                       value="{%for product in vendor.products%}{{product.id}}:{%endfor%}">
-
                 <div class="inline">
+                    <input class="hidden product" type="text" name="{{vendor.id}}:products_ids"
+                           value="{%for product in vendor.products%}{{product.id}}:{%endfor%}">
 
                     <div class="multi_box">
                         {%for product in vendor.products%}
@@ -52,7 +52,9 @@
                         <select onchange="addElement(this, 'product')">
                             <option value="placeholder">Новый товар</option>
                             {%for product in products%}
+                            {%if product not in vendor.products%}
                             <option value={{product.id}}>{{product.name}}</option>
+                            {%endif%}
                             {%endfor%}
                         </select>
 
@@ -71,7 +73,9 @@
                         <select onchange="addElement(this, 'facility')">
                             <option value="placeholder">Новое заведение</option>
                             {%for facility in facilities%}
+                            {%if facility not in vendor.facilities%}
                             <option value={{facility.id}}>{{facility.name}}</option>
+                            {%endif%}
                             {%endfor%}
                         </select>
 
@@ -93,18 +97,20 @@
         <div class="template">
             <input type="text" name="NEW:name" placeholder="Название">
             <input type="text" name="NEW:tg_id" placeholder="ID чата">
-            <select name="NEW:schedule">
-                <option>День поставок</option>
+            <button type="button" class="fell_btn" onclick="fell(this)">Расписание</button>
+            <div class="fell_div fell_hidden">
                 {%for i in range(days|length)%}
-                <option value="{{i}}">{{days[i]}}</option>
+                <input type="checkbox" id="NEW:schedule{{i}}" name="NEW:schedule{{i}}">
+                <label>{{days[i]}}</label><br>
                 {%endfor%}
-            </select>
+            </div>
             <br>
 
 
-            <input class="hidden product" type="text" name="NEW:products_ids"
-                   value="">
             <div class="inline">
+
+                <input class="hidden product" type="text" name="NEW:products_ids"
+                       value="">
                 <div class="multi_box">
                     <select onchange="addElement(this, 'product')">
                         <option value="placeholder">Новый товар</option>

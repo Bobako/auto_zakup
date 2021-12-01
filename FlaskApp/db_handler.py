@@ -6,7 +6,6 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, T
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-
 from FlaskApp.cfg import *
 
 Base = declarative_base()
@@ -62,6 +61,12 @@ class Vendor(Base):
     schedule = Column(Integer)
     products = relationship('Product', secondary='products_association', lazy='dynamic', backref='vendors')
     facilities = relationship('Facility', secondary='facilities_association', lazy='dynamic', backref='vendors')
+
+    def get_sch(self):
+        if self.schedule:
+            if "День" not in str(self.schedule):
+                return list(map(int, list(str(self.schedule))))
+        return [8]
 
     def __init__(self, name, tg_id, schedule, products=None, facilities=None):
         self.name = name
