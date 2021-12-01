@@ -59,19 +59,20 @@ html {
     transition: 0.2s;
 }
 
-.fell_btn:hover{
+.fell_btn:hover {
     cursor: pointer;
 }
 
-.fell_div{
+.fell_div {
+    z-index: 10000;
     border: 1px solid #b0b0b0;
     background-color: #eaeaea;
     border-radius: 5px;
     padding: 5px;
-    position:absolute;
+    position: absolute;
 }
 
-.fell_hidden{
+.fell_hidden {
 
     display: none;
 }
@@ -330,6 +331,17 @@ html {
 
 
 @media (max-width: 999.98px) {
+
+    .fell_btn {
+        height: 55px;
+        font-size: 24px;
+        position: relative;
+        bottom: 3px;
+    }
+    .fell_div{
+        padding-bottom: 20px;
+    }
+
     main {
         width: 100%;
     }
