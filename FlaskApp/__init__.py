@@ -9,7 +9,6 @@ app = Flask(__name__)
 db = Handler()
 login_manager = LoginManager()
 login_manager.init_app(app)
-filter_ = asc
 bot = Bot(db.session)
 
 DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
@@ -183,8 +182,8 @@ def vendors_page():
             vendor.pop('products_ids')
             vendor.pop('facilities_ids')
             for i in range(7):
-                if "schedule"+str(i) in vendor:
-                    vendor.pop("schedule"+str(i))
+                if "schedule" + str(i) in vendor:
+                    vendor.pop("schedule" + str(i))
         update_objs(vendors, Vendor)
 
     return render_template("vendors.html", vendors=db.session.query(Vendor).all(),
@@ -355,17 +354,65 @@ def orders_admin_page():
     return
 
 
+def merge_sort(stats: list, func):
+    l = len(stats)
+    if l < 2:
+        return stats
+    stats1 = merge_sort(stats[:int(l / 2)], func)
+    stats2 = merge_sort(stats[int(l / 2):], func)
+
+    i1 = 0
+    i2 = 0
+    stats = []
+    while i1 < len(stats1) or i2 < len(stats2):
+        if i1 == len(stats1):
+            stats.append(stats2[i2])
+            i2 += 1
+        elif i2 == len(stats2):
+            stats.append(stats1[i1])
+            i1 += 1
+        else:
+            if func(stats1[i1], stats2[i2]) < 0:
+                stats.append(stats1[i1])
+                i1 += 1
+            else:
+                stats.append(stats2[i2])
+                i2 += 1
+    return stats
+
+
+def less(stats1, stats2):
+    return stats1[2] - stats2[2]
+
+
+def more(stats1, stats2):
+    return stats2[2] - stats1[2]
+
+
+sf = less
+
+
 @app.route("/stats", methods=['post', 'get'])
 @login_required
 def stats_page():
+    global sf
     if request.method == "POST":
-        global filter_
-        if filter_ is asc:
-            filter_ = desc
+        if sf == less:
+            sf = more
         else:
-            filter_ = asc
+            sf = less
+    stats = []
+    for vendor in db.session.query(Vendor).all():
+        for product in vendor.products:
+            if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
+                stats.append(
+                    [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]), sum([order.amount for order in orders]),
+                     product.unit.designation])
+            else:
+                stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
+    print(stats)
     return render_template("stats.html",
-                           products=db.session.query(Product).order_by(filter_(Product.orders_amount)).all())
+                           products=merge_sort(stats, sf))
 
 
 @app.route("/logs", methods=['post', 'get'])

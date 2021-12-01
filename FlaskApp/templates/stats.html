@@ -20,8 +20,8 @@
         </div>
         <p class="stat">
             {%for product in products%}
-            {{product.name}} - заказов: {{product.orders_count}}, общее количество: {{product.orders_amount}}
-            {{product.unit.designation}}<br>
+            {{product[0]}} - заказов: {{product[1]}}, общее количество: {{product[2]}}
+            {{product[3]}}<br>
             {%endfor%}
         </p>
     </div>
