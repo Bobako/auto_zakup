@@ -157,7 +157,7 @@ def products_page():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 parse_file(UPLOAD+"/"+filename)
             except Exception as ex:
-                return ex
+                return str(ex)
             finally:
                 os.remove(UPLOAD+"/"+filename)
 
