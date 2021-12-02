@@ -153,13 +153,10 @@ def products_page():
         file = request.files["products:file"]
         if file:
             filename = "file.xlsx"
-            try:
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                parse_file(UPLOAD+"/"+filename)
-            except Exception as ex:
-                return str(ex)
-            finally:
-                os.remove(UPLOAD+"/"+filename)
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            parse_file(UPLOAD+"/"+filename)
+            os.remove(UPLOAD+"/"+filename)
 
     return render_template("products.html", products=db.session.query(Product).all(),
                            units=db.session.query(Unit).all())
