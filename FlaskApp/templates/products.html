@@ -13,7 +13,7 @@
 <main>
     <h1>Товары</h1>
     <div id="products">
-        <form id="products_form" action="" method="post">
+        <form enctype="multipart/form-data" id="products_form" action="" method="post">
             {%for product in products%}
             <div class="db_el">
                 <input class="long" type="text" name="{{product.id}}:name" placeholder="Имя" value="{{product.name}}">
@@ -37,6 +37,7 @@
             <div id="new_el_div">
 
             </div>
+            <input class="micro_btn right" type="file" name="products:file"><br><br><br><br><br><br>
             <input class="micro_btn right" type="submit" value="Сохранить">
         </form>
         <button class="micro_btn" id="new_el_button">Новый товар</button>

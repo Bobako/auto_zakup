@@ -1,11 +1,15 @@
+import os
+
 from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+import openpyxl
 
 from FlaskApp.db_handler import *
 from FlaskApp.bot import Bot
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD
 db = Handler()
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -135,6 +139,8 @@ def products_page():
         return redirect(url_for("index"))
     if request.method == "POST":
         products = parse_forms(request.form)
+        if "products" in products:
+            products.pop("products")
         for product in products.values():
             if product["unit_designation"] == "Единицы измерения":
                 product["unit_id"] = None
@@ -144,8 +150,39 @@ def products_page():
             product.pop("unit_designation")
 
         update_objs(products, Product)
+        file = request.files["products:file"]
+        if file:
+            filename = file.filename
+            try:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                parse_file(UPLOAD+"/"+filename)
+            except Exception:
+                pass
+            finally:
+                os.remove(UPLOAD+"/"+filename)
+
     return render_template("products.html", products=db.session.query(Product).all(),
                            units=db.session.query(Unit).all())
+
+
+def parse_file(filename):
+    wb = openpyxl.load_workbook(filename)
+    sheet = wb["Постачальники"]
+    row = 2
+    while sheet.cell(row=row, column=1).value:
+        product_name = sheet.cell(row=row, column=1).value
+        vendor_name = sheet.cell(row=row, column=6).value
+        if not db.session.query(Product).filter(Product.name == product_name).first():
+            product = Product(product_name, None)
+            db.session.add(product)
+            if vendor := db.session.query(Vendor).filter(Vendor.name == vendor_name).first():
+                vendor.products.append(product)
+
+        row += 1
+    wb.close()
+    db.session.commit()
+
+
 
 
 @app.route("/vendors", methods=['post', 'get'])
@@ -169,7 +206,7 @@ def vendors_page():
             for key in vendor:
                 if "schedule" in key:
                     schedule += key[-1]
-            if schedule:
+            if schedule != '':
                 vendor["schedule"] = int(schedule)
             else:
                 vendor["schedule"] = None
@@ -406,7 +443,8 @@ def stats_page():
         for product in vendor.products:
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
                 stats.append(
-                    [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]), sum([order.amount for order in orders]),
+                    [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
+                     sum([order.amount for order in orders]),
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
