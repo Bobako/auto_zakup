@@ -152,7 +152,7 @@ def products_page():
         update_objs(products, Product)
         file = request.files["products:file"]
         if file:
-            filename = file.filename
+            filename = "file.xlsx"
             try:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 parse_file(UPLOAD+"/"+filename)
