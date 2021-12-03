@@ -256,7 +256,8 @@ def preview():
     vendors = []
     for product in order.products:
         if product.amount:
-            vendors.append(product.vendor)
+            if product.vendor not in vendors:
+                vendors.append(product.vendor)
 
     return render_template("preview.html", order=order, vendors=vendors)
 
