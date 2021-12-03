@@ -169,17 +169,22 @@ def parse_file(filename):
     wb = openpyxl.load_workbook(filename)
     sheet = wb["Постачальники"]
     row = 2
+    d = {}
     while sheet.cell(row=row, column=1).value:
         product_name = sheet.cell(row=row, column=1).value
         vendor_name = sheet.cell(row=row, column=6).value
+
         if not db.session.query(Product).filter(Product.name == product_name).first():
-            product = Product(product_name, None)
+            product = Product(product_name, 1)
             db.session.add(product)
-            if vendor := db.session.query(Vendor).filter(Vendor.name == vendor_name).first():
-                vendor.products.append(product)
+            d[product] = vendor_name
 
         row += 1
     wb.close()
+    db.session.commit()
+    for product, vendor_name in d.items():
+        if vendor := db.session.query(Vendor).filter(Vendor.name == vendor_name).first():
+            vendor.products.append(product)
     db.session.commit()
 
 

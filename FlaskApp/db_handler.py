@@ -213,5 +213,14 @@ class Handler:
         self.session.commit()
 
 
+def delete_products(base=Base):
+    engine = sqlalchemy.create_engine('sqlite:///FlaskApp/database.db')
+    base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine, expire_on_commit=False)()
+    for product in session.query(Product).all():
+        session.delete(product)
+    session.commit()
+
+
 if __name__ == '__main__':
     pass
