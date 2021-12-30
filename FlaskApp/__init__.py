@@ -1,3 +1,4 @@
+import copy
 import os
 
 from flask import Flask, render_template, request, flash, redirect, url_for
@@ -155,11 +156,11 @@ def products_page():
             filename = "file.xlsx"
             try:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                parse_file(UPLOAD+"/"+filename)
+                parse_file(UPLOAD + "/" + filename)
             except Exception as ex:
                 print(ex)
             finally:
-                os.remove(UPLOAD+"/"+filename)
+                os.remove(UPLOAD + "/" + filename)
 
     return render_template("products.html", products=db.session.query(Product).all(),
                            units=db.session.query(Unit).all())
@@ -186,8 +187,6 @@ def parse_file(filename):
         if vendor := db.session.query(Vendor).filter(Vendor.name == vendor_name).first():
             vendor.products.append(product)
     db.session.commit()
-
-
 
 
 @app.route("/vendors", methods=['post', 'get'])
@@ -252,7 +251,7 @@ def preview():
         db.session.commit()
         return redirect(url_for("index"))
 
-    msg = db.session.query(MSGFormat).one().msg
+    order = previewable_order(order)
     vendors = []
     for product in order.products:
         if product.amount:
@@ -262,7 +261,26 @@ def preview():
     return render_template("preview.html", order=order, vendors=vendors)
 
 
+def previewable_order(order):
+    if order.status == "ADDITIONAL" and order.copy_id:
+        old_order = db.session.query(Order).filter(Order.id == order.copy_id).one()
+        new_order = Order(order.user_id, order.facility_id, order.date, order.status, False)
+        db.session.add(new_order)
+        db.session.commit()
+        for product, old_product in zip(order.products, old_order.products):
+            print(product.product.name, old_product.product.name)
+            new_product = OrderedProduct(product.product_id, product.amount-old_product.amount, product.vendor_id,
+                                         new_order.id)
+            db.session.add(new_product)
+        db.session.commit()
+        return new_order
+    return order
+
+
+
+
 def send_order(order, msgs):  # msgs - {vendor.id:msg}
+    copy_order(order)
     for product in order.products:
         if product.amount:
             product.product.orders_count += 1
@@ -271,6 +289,17 @@ def send_order(order, msgs):  # msgs - {vendor.id:msg}
     for vendor_id, msg in msgs.items():
         id_ = db.session.query(Vendor).filter(Vendor.id == vendor_id).one().tg_id
         bot.noti_vendor(int(id_), msg['msg'])
+
+
+def copy_order(order):
+    new_order = Order(None, None, None, None, False)
+    db.session.add(new_order)
+    db.session.commit()
+    order.copy_id = new_order.id
+    for product in order.products:
+        new_product = OrderedProduct(product.product.id, product.amount, product.vendor_id, new_order.id)
+        db.session.add(new_product)
+    db.session.commit()
 
 
 @app.route("/order_format", methods=['post', 'get'])
@@ -303,37 +332,51 @@ def index():
         if order_id == "new":
             order_id = create_order(order, user)
         else:
-            order_id = update_order(order, order_id)
+            order_id = update_order(order, order_id, user)
 
         if user.is_admin and order_id:
             return redirect(url_for("preview") + f"?id={order_id}")
 
     orders = get_orders(user)
+
     old_orders = get_old_orders(user)
 
+    vendors = db.session.query(Vendor).all()
+    products = db.session.query(Product).all()
+
+    col1 = max([len(vendor.name) for vendor in vendors])
+    col2 = max([len(product.name) for product in products])
+    col3 = 3
+    col4 = max([len(product.unit.designation) if product.unit else 2 for product in products])
+
+    facility_id = request.args.get('fid')
+    if not facility_id:
+        facility_id = 0
+    if not user.is_admin:
+        facility_id = user.facility_id
+    print(facility_id)
     return render_template("orders.html", user=user, orders=orders, old_orders=old_orders,
-                           products=db.session.query(Product).all(), days=DAYS,
-                           vendors=db.session.query(Vendor).all(), facilities=db.session.query(Facility).all())
+                           products=products, days=DAYS,
+                           vendors=vendors, facilities=db.session.query(Facility).all(),
+                           col1=col1, col2=col2, col3=col3, col4=col4, facility_id=int(facility_id))
 
 
 def get_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "NEW").filter(
-            Order.date > datetime.datetime.now()).all()
-        orders += db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ADDITIONAL").filter(
-            Order.date > datetime.datetime.now()).all()
-        orders += db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(
-            Order.date > datetime.datetime.now()).all()
+        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status != "ORDERED").filter(Order.display==True).all()
     else:
-        orders = db.session.query(Order).filter(Order.facility_id == user.facility_id).order_by(
-            desc(Order.create_date)).filter(Order.date > datetime.datetime.now()).all()
+        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
+            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(Order.display==True).all()
     return orders
 
 
 def get_old_orders(user):
     if user.is_admin:
+        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(Order.display==True).all()
+    else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.date < datetime.datetime.now()).all()
+            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(Order.display==True).all()
+    return orders
 
 
 def create_order(order, user):
@@ -343,7 +386,10 @@ def create_order(order, user):
     db.session.commit()
     order_id = db.session.query(Order).order_by(desc(Order.id)).first().id
     parse_order_products(order, order_id)
-    bot.noti_admin(f"Создан заказ {order_id}")
+    if not user.is_admin:
+        bot.noti_admin(
+            f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} cоздал заказ "
+            f"#{order_id}")
     return order_id
 
 
@@ -358,7 +404,7 @@ def parse_order_products(order, order_id):
     db.session.commit()
 
 
-def update_order(order, order_id):
+def update_order(order, order_id, user):
     if "Удалить" in order["order"].values():
         order_obj = db.session.query(Order).filter(Order.id == order_id).one()
         for product in order_obj.products:
@@ -371,7 +417,10 @@ def update_order(order, order_id):
     order_obj = db.session.query(Order).filter(Order.id == order_id).one()
     order_obj.status = "ADDITIONAL"
     db.session.commit()
-    bot.noti_admin(f"Изменен заказ {order_id}")
+    if not user.is_admin:
+        bot.noti_admin(
+            f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} изменил заказ "
+            f"#{order_obj.id}")
     return order_id
 
 

@@ -131,8 +131,10 @@ class Order(Base):
     msg_id = Column(Integer)
     updated = Column(Boolean)
     msg = Column(String)
+    display = Column(Boolean)
+    copy_id = Column(Integer)
 
-    def __init__(self, user_id, facility_id, date=None, status="NEW"):
+    def __init__(self, user_id, facility_id, date=None, status="NEW", display=True):
         self.create_date = datetime.datetime.now()
         self.date = self.create_date + datetime.timedelta(days=1)
         self.user_id = user_id
@@ -141,6 +143,7 @@ class Order(Base):
         self.msg_id = None
         self.updated = False
         self.msg = None
+        self.display = display
 
 
 class OrderedProduct(Base):

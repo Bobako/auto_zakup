@@ -46,10 +46,27 @@
         </div>
     </div>
     <br>
-    {%if orders%}
+
+
     <div class="orders_cat">
-        <h1>Изменить заказ</h1>
+        <h1>Новые заказы и дозаказы</h1>
+        {%if user.is_admin %}
+        <h3>Сортировать по заведениям:
+                <select onchange="selectFacility(this)">
+                    <option value=0>Все заведения</option>
+                    {%for facility in facilities%}
+                    {%if facility.id == facility_id%}
+                    <option selected value="{{facility.id}}">{{facility.name}}</option>
+                    {%else%}
+                    <option value="{{facility.id}}">{{facility.name}}</option>
+                    {%endif%}
+                    {%endfor%}
+                </select>
+        </h3>
+        {%endif%}
+
         {%for order in orders%}
+        {%if (order.facility_id == facility_id) or facility_id==0%}
         <div class="db_el paddles">
             <form action="" method="post">
                 <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
@@ -62,26 +79,128 @@
                         {% if order.status == "ORDERED" %} Заказан {% endif %}
                     </span>
                 </div>
+                <div class="products">
                 {%for product in order.products%}
-
+                {%if product.amount %}
                 <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
                        placeholder="Поставщик">
-                <input class="short" type="text" disabled name="{{product.id}}:vendor_id"
+                <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
                        value="{{product.vendor.name}}"
                        placeholder="Поставщик">
 
-                <input class="short" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
-                <input class="short" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                <input class=" col3" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
                        placeholder="Количество"
                        onchange="checkAmount(this)">
 
-                <input class="short" type="text" disabled value="{{product.product.unit.designation}}"
+                <input class=" col4" type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
                        placeholder="Ед">
                 <br>
+                {%else%}
+                <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
+                       placeholder="Поставщик">
+                <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
+                       value="{{product.vendor.name}}"
+                       placeholder="Поставщик">
+
+                <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+
+                <input class="col3 pid{{product.id}} space" hidden type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                       placeholder="Количество"
+                       onchange="checkAmount(this)">
+
+                <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
+                       placeholder="Ед">
+                {%endif%}
+                {%endfor%}
+                </div>
+                <select onchange="addProduct(this)">
+                    <option value="placeholder">Добавить товар</option>
+                {%for product in order.products%}
+                {%if not product.amount %}
+                    <option value="pid{{product.id}}">{{product.vendor.name}} - {{product.product.name}}</option>
+                {%endif%}
+                {%endfor%}
+                </select>
+                <br>
+                {%if user.is_admin%}
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
+                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Подтвердить">
+                {%else%}
+                {%if order.status != "ORDERED" %}
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
+                {%endif%}
+                <input class="micro_btn right" type="submit" name="order:{{order.id}}"
+                       value="Изменить">
+                {%endif%}
+
+            </form>
+        </div>
+        {%endif%}
+        {%endfor%}
+    </div>
+    <br>
+
+
+    <div class="orders_cat">
+        <h1>Уже заказано</h1>
+        {%for order in old_orders%}
+        {%if (order.facility_id == facility_id) or facility_id==0%}
+        <div class="db_el paddles">
+<form action="" method="post">
+                <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
+                <div class="order_header">
+                    Заказ #{{order.id}} для {{order.facility.name}}
+
+                    <span class="right">
+                        {% if order.status == "NEW" %} Новый {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
+                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                    </span>
+                </div>
+                <div class="products">
+                {%for product in order.products%}
+
+                {%if product.amount %}
+                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
+                           placeholder="Поставщик">
+                    <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
+                           value="{{product.vendor.name}}"
+                           placeholder="Поставщик">
+                    <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                    <input class=" col3" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                           placeholder="Количество"
+                           onchange="checkAmount(this)">
+                    <input class=" col4" type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
+                           placeholder="Ед">
+                    <br>
+                {%else%}
+                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
+                           placeholder="Поставщик">
+                    <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
+                           value="{{product.vendor.name}}"
+                           placeholder="Поставщик">
+                    <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                    <input class="col3 pid{{product.id}} space" hidden type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                           placeholder="Количество"
+                           onchange="checkAmount(this)">
+                    <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
+                           placeholder="Ед">
+                    <br class="pid{{product.id}}" hidden>
+                {%endif%}
 
                 {%endfor%}
-
+                </div>
+                <select onchange="addProduct(this)">
+                    <option value="placeholder">Добавить товар</option>
+                {%for product in order.products%}
+                {%if not product.amount %}
+                    <option value="pid{{product.id}}">{{product.vendor.name}} - {{product.product.name}}</option>
+                {%endif%}
+                {%endfor%}
+                </select>
+                <br>
 
                 {%if user.is_admin%}
                 <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
@@ -96,46 +215,14 @@
 
             </form>
         </div>
+        {%endif%}
         {%endfor%}
     </div>
-    {%endif%}
-    <br>
-    {%if old_orders%}
-    <div class="orders_cat">
-        <h1>Старые заказы</h1>
-        {%for order in orders%}
-        <div class="db_el paddles">
 
-            <div class="order_header">
-                Заказ #{{order.id}} для {{order.facility.name}}
 
-                <span class="right">
-                        {% if order.status == "NEW" %} Новый {% endif %}
-                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
-                        {% if order.status == "ORDERED" %} Заказан {% endif %}
-                    </span>
-            </div>
-            {%for product in order.products%}
 
-            <input class="short" type="text" disabled name="{{product.id}}:vendor_id"
-                   value="{{product.vendor.name}}"
-                   placeholder="Поставщик">
 
-            <input class="short" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
-            <input class="short" type="text" disabled name="{{product.id}}:amount" value="{{product.amount}}"
-                   placeholder="Количество">
-
-            <input class="short" type="text" disabled value="{{product.product.unit.designation}}"
-                   placeholder="Ед">
-            <br>
-
-            {%endfor%}
-
-        </div>
-        {%endfor%}
-    </div>
-    {%endif%}
 </main>
 
 
@@ -160,3 +247,18 @@
 
 </body>
 </html>
+
+<style>
+    @media(min-width:1000px){
+        .col4{width:{{col4*11}}px!important;}
+    .col3{width:{{col3*11}}px!important;}
+    .col2{width:{{col2*11}}px!important;}
+    .col1{width:{{col1*11}}px!important;}
+    }
+    @media(max-width:999.98px){
+        .col4{width:{{col4*16}}px!important;}
+    .col3{width:{{col3*24}}px!important;}
+    .col2{width:{{col2*12}}px!important;}
+    .col1{width:{{col1*16}}px!important;}
+    }
+</style>

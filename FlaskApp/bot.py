@@ -45,6 +45,6 @@ class Bot:
             bot.send_message(id_, msg)
         except Exception as e:
             print(type(e), e.args, "при отправке поставщику")
-            return str(type(e)) + " " + str(e.args)
+            return str(type(e)) + " " + str(e.args) + " " + str(e)
         else:
-            return True
+            return str(True)

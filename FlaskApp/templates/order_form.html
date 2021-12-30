@@ -2,14 +2,14 @@
 {%for product in vendor.products%}
 
 <input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Поставщик">
-<input class="short" type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Поставщик">
+<input class="col1" type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Поставщик">
 
 <input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
-<input class="short" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
+<input class="col2" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
 
-<input class="short" type="text" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
+<input class="col3" type="text" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
 
-<input class="short" type="text" disabled name="NEW:product_designation" value="{{product.unit.designation}}"
+<input class="col4" type="text" disabled name="NEW:product_designation" value="{{product.unit.designation}}"
        placeholder="Ед">
 <br>
 {%endfor%}
