@@ -81,6 +81,8 @@ def users_page():
                 break
             else:
                 pins.append(user["code"])
+
+        print(users)
         if correct:
             update_objs(users, User)
     return render_template("users.html", users=db.session.query(User).all(),
@@ -560,6 +562,8 @@ def parse_forms(form, checkboxes=()):
         for checkbox in checkboxes:
             if checkbox not in res_dict:
                 res_dict[checkbox] = False
+            else:
+                res_dict[checkbox] = True
 
     return result
 
