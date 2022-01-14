@@ -356,7 +356,6 @@ def index():
         facility_id = 0
     if not user.is_admin:
         facility_id = user.facility_id
-    print(facility_id)
     return render_template("orders.html", user=user, orders=orders, old_orders=old_orders,
                            products=products, days=DAYS,
                            vendors=vendors, facilities=db.session.query(Facility).all(),
@@ -505,7 +504,6 @@ def stats_page():
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
-    print(stats)
     return render_template("stats.html",
                            products=merge_sort(stats, sf))
 
