@@ -30,6 +30,7 @@ function get_available_products(selector) {
 
 
 function checkAmount(input) {
+    input.value = input.value.replace(',','.');
     if (!isInt(input.value)){
         $(input).css("background-color", "#ffa1a1");
         $(input).parent().parent().find(".micro_btn.right").attr("disabled", "disabled");
@@ -40,9 +41,7 @@ function checkAmount(input) {
 }
 
 function isInt(value) {
-    return !isNaN(value) &&(function (x) {
-        return ((x | 0) === x) && x>=0;
-    })(parseFloat(value))
+    return value >= 0 && !(String(value) === "");
 }
 
 function selectFacility(selector){

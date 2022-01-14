@@ -270,7 +270,6 @@ def previewable_order(order):
         db.session.add(new_order)
         db.session.commit()
         for product, old_product in zip(order.products, old_order.products):
-            print(product.product.name, old_product.product.name)
             new_product = OrderedProduct(product.product_id, product.amount-old_product.amount, product.vendor_id,
                                          new_order.id)
             db.session.add(new_product)
