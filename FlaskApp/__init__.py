@@ -8,7 +8,7 @@ import openpyxl
 
 from FlaskApp.db_handler import *
 from FlaskApp.bot import Bot
-from FlaskApp.cfg import UPLOAD
+from FlaskApp.cfg import *
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD
