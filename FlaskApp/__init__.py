@@ -496,10 +496,13 @@ def stats_page():
     for vendor in db.session.query(Vendor).all():
         for product in vendor.products:
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
-                stats.append(
+                try:
+                    stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
                      sum([order.amount for order in orders]),
                      product.unit.designation])
+                except Exception:
+                    raise Exception("pizda" + str([order.amount for order in orders]))
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
     return render_template("stats.html",
