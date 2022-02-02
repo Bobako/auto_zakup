@@ -500,7 +500,7 @@ def stats_page():
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
                 stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
-                     sum([int(order.amount) for order in orders]),
+                     sum([order.amount for order in orders if order.amount]),
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
