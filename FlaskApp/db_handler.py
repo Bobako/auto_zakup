@@ -2,7 +2,7 @@ import datetime
 import sys
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
@@ -197,6 +197,7 @@ class Handler:
         self.session = sessionmaker(bind=engine, expire_on_commit=False)()
         if not self.exist:
             self.create_admin()
+        self.null_trash()
         print("База данных подключена.")
 
     def db_exist(self):
@@ -215,6 +216,15 @@ class Handler:
         self.session.add(Noti())
         self.session.commit()
 
+    def null_trash(self):
+        for product in self.session.query(OrderedProduct).all():
+            try:
+                float(product.amount)
+            except ValueError:
+                product.amount = 0
+        self.session.commit()
+
+
 
 def delete_products(base=Base):
     engine = sqlalchemy.create_engine('sqlite:///FlaskApp/database.db')
@@ -224,6 +234,13 @@ def delete_products(base=Base):
         session.delete(product)
     session.commit()
 
+
+def check_trash(base=Base):
+    engine = sqlalchemy.create_engine('sqlite:///FlaskApp/database.db')
+    base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine, expire_on_commit=False)()
+    for product in session.query(OrderedProduct).all():
+        print([product.amount])
 
 if __name__ == '__main__':
     pass

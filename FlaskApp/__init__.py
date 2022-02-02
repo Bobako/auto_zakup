@@ -271,20 +271,12 @@ def previewable_order(order):
         db.session.add(new_order)
         db.session.commit()
         for product, old_product in zip(order.products, old_order.products):
-            new_product = OrderedProduct(product.product_id, prot_float(product.amount)-prot_float(old_product.amount), product.vendor_id,
+            new_product = OrderedProduct(product.product_id, product.amount-old_product.amount, product.vendor_id,
                                          new_order.id)
             db.session.add(new_product)
         db.session.commit()
         return new_order
     return order
-
-
-def prot_float(a):
-    try:
-        return float(a)
-    except ValueError:
-        return 0
-
 
 
 def send_order(order, msgs):  # msgs - {vendor.id:msg}
@@ -506,7 +498,7 @@ def stats_page():
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
                 stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
-                     sum([prot_float(order.amount) for order in orders]),
+                     sum([order.amount for order in orders]),
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
