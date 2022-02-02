@@ -8,6 +8,7 @@ import openpyxl
 
 from FlaskApp.db_handler import *
 from FlaskApp.bot import Bot
+from FlaskApp.cfg import UPLOAD
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD
@@ -345,10 +346,10 @@ def index():
     vendors = db.session.query(Vendor).all()
     products = db.session.query(Product).all()
 
-    col1 = max([len(vendor.name) for vendor in vendors])
-    col2 = max([len(product.name) for product in products])
+    col1 = max([len(vendor.name) for vendor in vendors] + [5])
+    col2 = max([len(product.name) for product in products] + [5])
     col3 = 3
-    col4 = max([len(product.unit.designation) if product.unit else 2 for product in products])
+    col4 = max([len(product.unit.designation) if product.unit else 2 for product in products] + [2])
 
     facility_id = request.args.get('fid')
     if not facility_id:
@@ -499,7 +500,7 @@ def stats_page():
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
                 stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
-                     sum([order.amount for order in orders]),
+                     sum([int(order.amount) for order in orders]),
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
