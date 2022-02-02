@@ -240,7 +240,9 @@ def check_trash(base=Base):
     base.metadata.create_all(engine)
     session = sessionmaker(bind=engine, expire_on_commit=False)()
     for product in session.query(OrderedProduct).all():
-        if product.amount != 0:
+        try:
+            float(product.amount)
+        except ValueError:
             print([product.amount])
 
 if __name__ == '__main__':
