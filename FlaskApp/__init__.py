@@ -271,7 +271,7 @@ def previewable_order(order):
         db.session.add(new_order)
         db.session.commit()
         for product, old_product in zip(order.products, old_order.products):
-            new_product = OrderedProduct(product.product_id, product.amount-old_product.amount, product.vendor_id,
+            new_product = OrderedProduct(product.product_id, product.amount - old_product.amount, product.vendor_id,
                                          new_order.id)
             db.session.add(new_product)
         db.session.commit()
@@ -362,19 +362,21 @@ def index():
 
 def get_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status != "ORDERED").filter(Order.display==True).all()
+        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status != "ORDERED").filter(
+            Order.display == True).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(Order.display==True).all()
+            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(Order.display == True).all()
     return orders
 
 
 def get_old_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(Order.display==True).all()
+        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(
+            Order.display == True).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(Order.display==True).all()
+            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(Order.display == True).all()
     return orders
 
 
@@ -496,13 +498,12 @@ def stats_page():
     for vendor in db.session.query(Vendor).all():
         for product in vendor.products:
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
-                try:
-                    stats.append(
+
+                stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
                      sum([order.amount for order in orders]),
                      product.unit.designation])
-                except Exception:
-                    raise Exception("pizda" + str([order.amount for order in orders]))
+
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
     return render_template("stats.html",

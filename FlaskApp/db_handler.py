@@ -197,7 +197,7 @@ class Handler:
         self.session = sessionmaker(bind=engine, expire_on_commit=False)()
         if not self.exist:
             self.create_admin()
-        self.null_trash()
+        #self.null_trash()
         print("База данных подключена.")
 
     def db_exist(self):
