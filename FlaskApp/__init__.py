@@ -500,13 +500,22 @@ def stats_page():
             if orders := db.session.query(OrderedProduct).filter(OrderedProduct.product_id == product.id).all():
                 stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
-                     sum([order.amount for order in orders if order.amount]),
+                     sum_prot([order.amount for order in orders if order.amount]),
                      product.unit.designation])
             else:
                 stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
     return render_template("stats.html",
                            products=merge_sort(stats, sf))
 
+
+def sum_prot(amounts):
+    a = 0
+    for amount in amounts:
+        try:
+            a += int(amount)
+        except ValueError:
+            pass
+    return a
 
 @app.route("/logs", methods=['post', 'get'])
 @login_required
