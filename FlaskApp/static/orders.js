@@ -30,6 +30,7 @@ function get_available_products(selector) {
 
 
 function checkAmount(input) {
+    input.value = input.value.replaceAll(" ", "");
     input.value = input.value.replace(',','.');
     if (!isInt(input.value)){
         $(input).css("background-color", "#ffa1a1");
@@ -41,7 +42,7 @@ function checkAmount(input) {
 }
 
 function isInt(value) {
-    return value >= 0 && !(String(value) === "");
+    return value >= 0 && !(String(value).replaceAll(" ", "") === "");
 }
 
 function selectFacility(selector){
