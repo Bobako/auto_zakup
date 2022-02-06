@@ -260,7 +260,7 @@ details summary::marker { content: ""; }
         border: 1px solid #b0b0b0;
         box-sizing: border-box;
         min-width: 90px;
-        height: 30px;
+        min-height: 30px;
         transition: 0.2s;
     }
 
@@ -561,7 +561,7 @@ details summary::marker { content: ""; }
         border: 1px solid #b0b0b0;
         box-sizing: border-box;
         min-width: 90px;
-        height: 50px;
+        min-height: 50px;
         transition: 0.2s;
         font-size: 24px;
     }
