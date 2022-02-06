@@ -29,11 +29,11 @@ class Bot:
             except Exception:
                 pass
 
-    def noti_admin(self, msg):
+    def noti_admin(self, msg, tg_id):
         noti = self.session.query(Noti).one()
         if noti.send:
             try:
-                bot.send_message(noti.tg_id, msg)
+                bot.send_message(tg_id, msg)
             except Exception as e:
                 print(type(e), e.args, "при отправке админу")
                 return str(type(e)) + " " + str(e.args)

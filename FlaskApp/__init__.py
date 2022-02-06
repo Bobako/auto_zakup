@@ -1,4 +1,5 @@
 import copy
+import datetime
 import os
 
 from flask import Flask, render_template, request, flash, redirect, url_for
@@ -102,7 +103,7 @@ def facilities_page():
         correct = True
         for facility in facilities.values():
             if facility["name"] in names:
-                flash("Названия должны быть уникальны")
+                flash("Названия должны быть уникальным")
                 correct = False
                 break
             else:
@@ -142,7 +143,7 @@ def products_page():
     if not user.is_admin:
         return redirect(url_for("index"))
     if request.method == "POST":
-        products = parse_forms(request.form)
+        products = parse_forms(request.form, ["alco"])
         if "products" in products:
             products.pop("products")
         for product in products.values():
@@ -159,37 +160,79 @@ def products_page():
             filename = "file.xlsx"
             try:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                parse_file(UPLOAD + "/" + filename)
+                els = parse_file(UPLOAD + "/" + filename)
             except Exception as ex:
-                print(ex)
+                error = ex
+                els = None
+            else:
+                error = False
             finally:
                 os.remove(UPLOAD + "/" + filename)
+                return products_import(error, els)
 
     return render_template("products.html", products=db.session.query(Product).all(),
                            units=db.session.query(Unit).all())
 
 
+def products_import(error, els=None):
+    already_exist = []
+    not_found = []
+    if not error:
+        for el in els:
+            vendor = db.session.query(Vendor).filter(Vendor.name == el["vendor_name"]).first()
+            product = db.session.query(Product).filter(Product.name == el["product_name"]).first()
+            unit = db.session.query(Unit).filter(Unit.designation == el["unit_designation"]).first()
+            facility = db.session.query(Facility).filter(Facility.name == el["facility_name"]).first()
+
+            if not vendor:
+                not_found.append(f"{el['product_name']} -  нет поставщика '{el['vendor_name']}'")
+                continue
+
+            if product:
+                if product in vendor.products:
+                    already_exist.append(product.name)
+                    continue
+
+            if not unit:
+                not_found.append(f"{el['product_name']} -  нет ед. измерения '{el['unit_designation']}'")
+                continue
+
+            if not facility:
+                not_found.append(f"{el['product_name']} -  нет заведения '{el['facility_name']}'")
+                continue
+
+            product = Product(el["product_name"], unit.id, False)
+            db.session.add(product)
+            vendor.products.append(product)
+            if facility not in vendor.facilities:
+                vendor.facilities.append(facility)
+            db.session.commit()
+    l = len(els) - len(already_exist) - len(not_found)
+    return render_template("products_import.html", error=error, already_exist=already_exist, not_found=not_found, l=l)
+
+
 def parse_file(filename):
     wb = openpyxl.load_workbook(filename)
-    sheet = wb["Постачальники"]
-    row = 2
-    d = {}
-    while sheet.cell(row=row, column=1).value:
-        product_name = sheet.cell(row=row, column=1).value
-        vendor_name = sheet.cell(row=row, column=6).value
-
-        if not db.session.query(Product).filter(Product.name == product_name).first():
-            product = Product(product_name, 1)
-            db.session.add(product)
-            d[product] = vendor_name
-
+    sheet = wb.active
+    els = []
+    row = 0
+    blanks = 0
+    while True:
+        el = {}
         row += 1
+        if not sheet.cell(row, 1).value:
+            blanks += 1
+            if blanks > 3:
+                break
+            continue
+        blanks = 0
+        el["vendor_name"] = sheet.cell(row, 1).value.strip()
+        el["product_name"] = sheet.cell(row, 2).value.strip()
+        el["unit_designation"] = sheet.cell(row, 3).value.strip()
+        el["facility_name"] = sheet.cell(row, 4).value.strip()
+        els.append(el)
     wb.close()
-    db.session.commit()
-    for product, vendor_name in d.items():
-        if vendor := db.session.query(Vendor).filter(Vendor.name == vendor_name).first():
-            vendor.products.append(product)
-    db.session.commit()
+    return els
 
 
 @app.route("/vendors", methods=['post', 'get'])
@@ -202,7 +245,7 @@ def vendors_page():
     if request.method == "POST":
         vendors = parse_forms(request.form)
 
-        for vendor in vendors.values():
+        for id_, vendor in vendors.items():
             vendor["products"] = []
             for product_id in vendor['products_ids'].split(":"):
                 if product_id:
@@ -228,11 +271,25 @@ def vendors_page():
             for i in range(7):
                 if "schedule" + str(i) in vendor:
                     vendor.pop("schedule" + str(i))
-        update_objs(vendors, Vendor)
+
+            one_vendor = {id_: vendor}
+            vendor_id = update_objs(one_vendor, Vendor)[0]
+            update_orders(vendor_id, vendor["products"], vendor["facilities"])
 
     return render_template("vendors.html", vendors=db.session.query(Vendor).all(),
                            facilities=db.session.query(Facility).all(),
                            products=db.session.query(Product).all(), days=DAYS)
+
+
+def update_orders(vendor_id, products, facilities):
+    for facility in facilities:
+        for order in facility.orders:
+            ordered = order.products
+            ordered_products = [ordered_.product for ordered_ in ordered]
+            for product in products:
+                if product not in ordered_products:
+                    db.session.add(OrderedProduct(product.id, 0, vendor_id, order.id, product.unit_id, True))
+    db.session.commit()
 
 
 @app.route("/preview", methods=['post', 'get'])
@@ -250,6 +307,7 @@ def preview():
         msgs = parse_forms(request.form)
         msgs.pop("order")
         order.status = "ORDERED"
+        order.sent_date = datetime.datetime.now()
         send_order(order, msgs)
         db.session.commit()
         return redirect(url_for("index"))
@@ -292,12 +350,17 @@ def send_order(order, msgs):  # msgs - {vendor.id:msg}
 
 
 def copy_order(order):
-    new_order = Order(None, None, None, None, False)
-    db.session.add(new_order)
-    db.session.commit()
-    order.copy_id = new_order.id
+    if order.copy_id:
+        for product in db.session.query(Order).filter(Order.id == order.copy_id).one():
+            db.session.delete(product)
+    else:
+        new_order = Order(None, None, None, None, False)
+        db.session.add(new_order)
+        db.session.commit()
+        order.copy_id = new_order.id
     for product in order.products:
-        new_product = OrderedProduct(product.product.id, product.amount, product.vendor_id, new_order.id)
+        new_product = OrderedProduct(product.product.id, product.amount, product.vendor_id, order.copy_id,
+                                     product.unit_id, product.official)
         db.session.add(new_product)
     db.session.commit()
 
@@ -316,7 +379,7 @@ def order_format():
         msg = msg.replace("}\n", "}")
         db.session.query(MSGFormat).one().msg = msg
         db.session.commit()
-        with open("/var/www/FlaskApp/FlaskApp/templates/formatted_order.html", "w", encoding='utf-8') as file:
+        with open(FORMAT_PATH, "w", encoding='utf-8') as file:
             file.write(msg)
     msg = db.session.query(MSGFormat).one().msg
     return render_template("order_format.html", msg=msg)
@@ -327,7 +390,7 @@ def order_format():
 def index():
     user = current_user
     if request.method == 'POST':
-        order = parse_forms(request.form)
+        order = parse_forms(request.form, ["official"])
         order_id = list(order["order"].keys())[1]
         if order_id == "new":
             order_id = create_order(order, user)
@@ -357,26 +420,50 @@ def index():
     return render_template("orders.html", user=user, orders=orders, old_orders=old_orders,
                            products=products, days=DAYS,
                            vendors=vendors, facilities=db.session.query(Facility).all(),
-                           col1=col1, col2=col2, col3=col3, col4=col4, facility_id=int(facility_id))
+                           col1=col1, col2=col2, col3=col3, col4=col4, facility_id=int(facility_id),
+                           deleted_orders=get_deleted_orders(user), units=db.session.query(Unit).all())
 
 
 def get_orders(user):
     if user.is_admin:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status != "ORDERED").filter(
-            Order.display == True).all()
+            Order.display == True).filter(Order.deleted == False).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(Order.display == True).all()
+            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(
+            Order.display == True).filter(Order.deleted == False).all()
     return orders
 
 
 def get_old_orders(user):
     if user.is_admin:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(
-            Order.display == True).all()
+            Order.display == True).filter(Order.deleted == False).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(Order.display == True).all()
+            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(
+            Order.display == True).filter(Order.deleted == False).all()
+    return orders
+
+
+def get_deleted_orders(user):
+    if user.is_admin:
+        orders = db.session.query(Order).order_by(desc(Order.delete_date)).filter(
+            Order.display == True).filter(Order.deleted == True).all()
+    else:
+        orders = db.session.query(Order).order_by(desc(Order.delete_date)).filter(
+            Order.facility_id == user.facility_id).filter(
+            Order.display == True).filter(Order.deleted == True).all()
+    for order in orders:
+        if order.delete_date > datetime.datetime.now() + datetime.timedelta(days=30):
+            for product in order.products:
+                db.session.delete(product)
+            cp_order = db.session.query(Order).filter(Order.id == order.copy_id).one()
+            for product in cp_order.products:
+                db.session.delete(product)
+            db.session.delete(cp_order)
+            db.session.delete(order)
+    db.session.commit()
     return orders
 
 
@@ -390,7 +477,7 @@ def create_order(order, user):
     if not user.is_admin:
         bot.noti_admin(
             f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} cоздал заказ "
-            f"#{order_id}")
+            f"#{order_id}", db.session.query(Facility).filter(Facility.id == facility_id).one().tg_id)
     return order_id
 
 
@@ -398,30 +485,40 @@ def parse_order_products(order, order_id):
     for product_id, product_dict in order.items():
         if "NEW" in product_id:
             db.session.add(OrderedProduct(product_dict["product_id"], product_dict["amount"], product_dict["vendor_id"],
-                                          order_id))
+                                          order_id, product_dict["unit_id"], product_dict["official"]))
         else:
             product = db.session.query(OrderedProduct).filter(OrderedProduct.id == product_id).one()
             product.amount = product_dict["amount"]
+            product.unit_id = product_dict["unit_id"]
+            product.vendor_id = product_dict["vendor_id"]
+            product.official = product_dict["official"]
     db.session.commit()
 
 
 def update_order(order, order_id, user):
     if "Удалить" in order["order"].values():
         order_obj = db.session.query(Order).filter(Order.id == order_id).one()
-        for product in order_obj.products:
-            db.session.delete(product)
-        db.session.delete(order_obj)
+        order_obj.deleted = True
+        order_obj.delete_date = datetime.datetime.now()
+        db.session.commit()
+        return None
+    if "Восстановить" in order["order"].values():
+        order_obj = db.session.query(Order).filter(Order.id == order_id).one()
+        order_obj.deleted = False
+        order_obj.delete_date = None
         db.session.commit()
         return None
     order.pop("order")
     parse_order_products(order, order_id)
     order_obj = db.session.query(Order).filter(Order.id == order_id).one()
-    order_obj.status = "ADDITIONAL"
+    if order_obj.status == "ORDERED":
+        order_obj.status = "ADDITIONAL"
+    order_obj.create_date = datetime.datetime.now()
     db.session.commit()
     if not user.is_admin:
         bot.noti_admin(
             f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} изменил заказ "
-            f"#{order_obj.id}")
+            f"#{order_obj.id}", db.session.query(Facility).filter(Facility.id == order_obj.facility_id).one().tg_id)
     return order_id
 
 
@@ -429,7 +526,8 @@ def update_order(order, order_id, user):
 def get_available_products():
     facility_id = request.args.get('id')
     return render_template('order_form.html',
-                           vendors=db.session.query(Facility).filter(Facility.id == facility_id).one().vendors)
+                           vendors=db.session.query(Facility).filter(Facility.id == facility_id).one().vendors,
+                           units=db.session.query(Unit).all())
 
 
 @app.route("/api/formatted_order", methods=['get'])
@@ -569,6 +667,7 @@ def parse_forms(form, checkboxes=()):
 
 
 def update_objs(dicts, class_, not_nullable="name"):
+    ids = []
     for id_, dict_ in dicts.items():
         if "NEW" not in id_:
             obj = db.session.query(class_).filter(class_.id == id_).one()
@@ -577,13 +676,17 @@ def update_objs(dicts, class_, not_nullable="name"):
                 continue
             for arg_name, value in dict_.items():
                 setattr(obj, arg_name, value)
+            ids.append(obj)
+
         else:
             if not dict_[not_nullable]:
                 continue
 
             obj = class_(**dict_)
             db.session.add(obj)
+            ids.append(obj)
     db.session.commit()
+    return [obj.id for obj in ids]
 
 
 if __name__ == '__main__':

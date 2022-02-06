@@ -7,10 +7,18 @@
 <input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
 <input class="col2" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
 
-<input class="col3" type="text" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
+<input class="col3" type="number" step="any" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
 
-<input class="col4" type="text" disabled name="NEW:product_designation" value="{{product.unit.designation}}"
-       placeholder="Ед">
+<select name = "NEW:unit_id">
+    <option selected value="{{product.unit_id}}">{% if product.unit_id %} {{product.unit.designation}} {% endif %}</option>
+    {% for unit in units%}
+    {% if unit.id != product.unit.id %}
+    <option value="{{unit.id}}">{{unit.designation}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+<input type="checkbox"  checked name = "NEW:official" {% if not product.alco%} hidden {% endif %}>
+<label {% if not product.alco%} hidden {% endif %}> Офиц.</label>
 <br>
 {%endfor%}
 {%endfor%}

@@ -1,8 +1,7 @@
-Добрый день<br>
+Добрий день<br>
 <br>
-
-Заказ #{{order.id}} для {{order.facility.name}} ({{order.facility.address}}) {%if order.status == "ADDITIONAL"%}был изменен{%endif%}<br>
+Замовлення #{{order.id}} для {{order.facility.name}} ({{order.facility.address}})<br>
 <br>
-{%for product in order.products %}{% if product.amount %}{%if vendor in product.product.vendors%}{{product.product.name}}: {{product.amount}} {{product.product.unit.designation}}<br>
+{%for product in order.products %}{% if product.amount %}{%if vendor.id == product.vendor_id%}{{product.product.name}}: {{product.amount}} {{product.unit.designation}} {% if not product.official %}(не официально){% endif %}<br>
 {%endif%}{%endif%}{%endfor%}<br>
-Спасибо
+Дякую!

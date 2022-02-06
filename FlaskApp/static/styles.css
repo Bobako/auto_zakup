@@ -77,6 +77,29 @@ html {
     display: none;
 }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]:hover,
+input[type="number"]:focus {
+  -moz-appearance: number-input;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+
+details summary::-webkit-details-marker { display: none; }
+details summary::marker { content: ""; }
 
 
 @media (min-width: 1000px) {
@@ -84,6 +107,15 @@ html {
         width: 1000px;
         margin: auto;
     }
+
+    details summary{
+    cursor: pointer;
+    outline-style: none;
+    text-decoration: underline black;
+    margin: 5px;
+    display: block;
+    height: 29px;
+}
 
 
     .btn:hover {
@@ -122,6 +154,16 @@ html {
         font-size: 16px;
         outline: none;
     }
+
+    input[type="number"] {
+        margin: 5px;
+        border: 1px solid #cccccc;
+        border-radius: 3px;
+        height: 24px;
+        width: 120px;
+        font-size: 16px;
+        outline: none;
+}
 
 
     select {
@@ -345,6 +387,18 @@ html {
     .space{
     margin-right: 14.3px !important;
 }
+
+    details summary{
+    cursor: pointer;
+    outline-style: none;
+    text-decoration: underline black;
+    margin: 10px;
+    display: block;
+    height: 55px;
+    font-size: 24px;
+}
+
+
     .fell_btn {
         height: 55px;
         font-size: 24px;
@@ -382,6 +436,17 @@ html {
         font-size: 32px;
         outline: none;
     }
+
+    input[type="number"] {
+        margin: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 3px;
+        height: 50px;
+        width: 200px;
+        font-size: 32px;
+        outline: none;
+    }
+
 
     input[disabled] {
         font-size: 20px;

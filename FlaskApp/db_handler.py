@@ -47,10 +47,12 @@ class Facility(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     address = Column(String)
+    tg_id = Column(Integer)
 
-    def __init__(self, name, address):
+    def __init__(self, name, address, tg_id):
         self.name = name
         self.address = address
+        self.tg_id = tg_id
 
 
 class Vendor(Base):
@@ -98,13 +100,15 @@ class Product(Base):
     unit_id = Column(Integer, ForeignKey("unit.id"))
     unit = relationship("Unit", backref="products")
     orders_count = Column(Integer)
-    orders_amount = Column(Integer)
+    orders_amount = Column(Float)
+    alco = Column(Boolean)
 
-    def __init__(self, name, unit_id):
+    def __init__(self, name, unit_id, alco):
         self.name = name
         self.unit_id = unit_id
         self.orders_count = 0
         self.orders_amount = 0
+        self.alco = alco
 
 
 class Unit(Base):
@@ -123,6 +127,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True)
     date = Column(DateTime)
     create_date = Column(DateTime)
+    sent_date = Column(DateTime)
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", backref="orders")
     facility_id = Column(Integer, ForeignKey("facility.id"))
@@ -133,6 +138,8 @@ class Order(Base):
     msg = Column(String)
     display = Column(Boolean)
     copy_id = Column(Integer)
+    deleted = Column(Boolean)
+    delete_date = Column(DateTime)
 
     def __init__(self, user_id, facility_id, date=None, status="NEW", display=True):
         self.create_date = datetime.datetime.now()
@@ -144,6 +151,10 @@ class Order(Base):
         self.updated = False
         self.msg = None
         self.display = display
+        self.deleted = False
+        self.delete_date = None
+        self.sent_date = None
+
 
 
 class OrderedProduct(Base):
@@ -156,12 +167,17 @@ class OrderedProduct(Base):
     vendor_id = Column(Integer, ForeignKey("vendor.id"))
     vendor = relationship("Vendor", backref="ordered")
     amount = Column(Integer)
+    unit_id = Column(Integer, ForeignKey("unit.id"))
+    unit = relationship("Unit", backref="ordered")
+    official = Column(Boolean)
 
-    def __init__(self, product_id, amount, vendor_id, order_id):
+    def __init__(self, product_id, amount, vendor_id, order_id, unit_id, official):
         self.product_id = product_id
         self.amount = amount
         self.vendor_id = vendor_id
         self.order_id = order_id
+        self.unit_id = unit_id
+        self.official = official
 
     def __repr__(self):
         return f"{self.product.name} {self.amount}"
@@ -198,6 +214,7 @@ class Handler:
         if not self.exist:
             self.create_admin()
         #self.null_trash()
+        self.drop_orders()
         print("База данных подключена.")
 
     def db_exist(self):
@@ -224,6 +241,12 @@ class Handler:
                 product.amount = 0
         self.session.commit()
 
+    def drop_orders(self):
+        orders = self.session.query(Order).filter(Order.deleted == True).all()
+        for order in orders:
+            self.session.delete(order)
+        self.session.commit()
+
 
 
 def delete_products(base=Base):
@@ -242,6 +265,33 @@ def check_trash(base=Base):
     for product in session.query(OrderedProduct).all():
         if product.amount is None:
             print(product.amount)
+
+
+def test(base=Base):
+    engine = sqlalchemy.create_engine('sqlite:///FlaskApp/database.db')
+    base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine, expire_on_commit=False)()
+    vendors = []
+    products = []
+    units = []
+    facilities = []
+    for product in session.query(Product).all():
+        try:
+            vendors.append(product.vendors[0].name)
+        except Exception:
+            continue
+        products.append(product.name)
+        units.append(product.unit.designation)
+        facilities.append(product.vendors[0].facilities[0].name)
+    print("\n".join(vendors))
+    print("\n--------------------\n")
+    print("\n".join(products))
+    print("\n--------------------\n")
+    print("\n".join(units))
+    print("\n--------------------\n")
+    print("\n".join(facilities))
+    print("\n--------------------\n")
+
 
 if __name__ == '__main__':
     pass

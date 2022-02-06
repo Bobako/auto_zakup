@@ -66,6 +66,14 @@ function addProduct(selector){
     form.append(els);
     form.append("<br>")
     $("."+pid).removeAttr("hidden");
+}
 
+function details(summary){
+    if (summary.innerHTML == "Показать товары"){
+        $(summary).html("Скрыть товары");
+    }
+    else{
+        $(summary).html("Показать товары");
+    }
 
 }

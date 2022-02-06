@@ -28,7 +28,14 @@
                     {%endif%}
                     {%endfor%}
                 </select>
+
                 <span class="cb_span">
+                    <input class=norm type="checkbox" id="{{product.id}}:alco" name="{{product.id}}:alco"
+                           {%if product.alco%} checked {% endif %}>
+                    <label class=norm for="{{product.id}}:alco">Алкоголь</label>
+                </span>
+
+                <span class="cb_span right">
                 <input class=" norm" type="checkbox" id="{{product.id}}:delete" name="{{product.id}}:delete">
                 <label class=" norm" for="{{product.id}}:delete">Удалить</label>
                 </span>
@@ -51,6 +58,11 @@
                 <option>{{unit.designation}}</option>
                 {%endfor%}
             </select>
+
+            <span class="cb_span">
+                    <input class=norm type="checkbox" name="NEW:alco">
+                    <label class=norm>Алкоголь</label>
+                </span>
 
         </div>
 

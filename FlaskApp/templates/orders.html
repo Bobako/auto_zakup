@@ -34,9 +34,12 @@
                     <input type="text" class="hidden" name="order:facility_id" value="{{user.facility_id}}">
                     {%endif%}
                 </div>
-                <div id="new_order_placeholder">
+                <details>
+                    <summary onclick="details(this)">Показать товары</summary>
+                    <div id="new_order_placeholder">
 
-                </div>
+                    </div>
+                </details>
                 {%if user.is_admin%}
                 <input class="micro_btn right" type="submit" name="order:new" value="Подтвердить">
                 {%else%}
@@ -72,49 +75,83 @@
                 <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
                 <div class="order_header">
                     Заказ #{{order.id}} для {{order.facility.name}}
-
                     <span class="right">
                         {% if order.status == "NEW" %} Новый {% endif %}
                         {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
                         {% if order.status == "ORDERED" %} Заказан {% endif %}
                     </span>
+                    <br>
+                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    {% if order.sent_date %}
+                    <span class="right">
+                        Отправлен {{order.sent_date.strftime('%d.%m %H:%M')}}
+                    </span>
+                    {% endif %}
+
                 </div>
-                <div class="products">
+                <details>
+                    <summary onclick="details(this)">Показать товары</summary>
+                    <div class="products">
                 {%for product in order.products%}
                 {%if product.amount %}
-                <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                       placeholder="Поставщик">
-                <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
-                       value="{{product.vendor.name}}"
-                       placeholder="Поставщик">
+                <select class="col1" name="{{product.id}}:vendor_id">
+                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
+                    {% for vendor in product.product.vendors %}
+                    {% if vendor.id != product.vendor_id %}
+                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
 
                 <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
-                <input class=" col3" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                <input class=" col3" type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
                        placeholder="Количество"
                        onchange="checkAmount(this)">
 
-                <input class=" col4" type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
-                       placeholder="Ед">
+                <select class="col4"  name = "{{product.id}}:unit_id">
+                    <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
+                    {% for unit in units%}
+                    {% if unit.id != product.unit_id %}
+                    <option value="{{unit.id}}">{{unit.designation}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="checkbox" {% if not product.product.alco%} hidden {% endif %} {% if product.official %} checked {% endif %} name = "{{product.id}}:official">
+                <label {% if not product.product.alco%} hidden {% endif %} > Офиц.</label>
                 <br>
                 {%else%}
-                <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                       placeholder="Поставщик">
-                <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
-                       value="{{product.vendor.name}}"
-                       placeholder="Поставщик">
+                <select hidden class="col1 pid{{product.id}} space" name="{{product.id}}:vendor_id">
+                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
+                    {% for vendor in product.product.vendors %}
+                    {% if vendor.id != product.vendor_id %}
+                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
 
                 <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
-                <input class="col3 pid{{product.id}} space" hidden type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                <input class="col3 pid{{product.id}} space" hidden type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
                        placeholder="Количество"
                        onchange="checkAmount(this)">
 
-                <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
-                       placeholder="Ед">
+                <select class="col4 pid{{product.id}} space" hidden  name = "{{product.id}}:unit_id">
+                    <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
+                    {% for unit in units%}
+                    {% if unit.id != product.unit_id %}
+                    <option value="{{unit.id}}">{{unit.designation}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+
+                <input hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} type="checkbox" name = "{{product.id}}:official" {%if product.official %} checked {% endif %}>
+                <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офиц.</label>
+
                 {%endif%}
                 {%endfor%}
                 </div>
+                </details>
                 <select onchange="addProduct(this)">
                     <option value="placeholder">Добавить товар</option>
                 {%for product in order.products%}
@@ -158,40 +195,81 @@
                         {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
                         {% if order.status == "ORDERED" %} Заказан {% endif %}
                     </span>
+                    <br>
+                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    {% if order.sent_date %}
+                    <span class="right">
+                        Отправлен {{order.sent_date.strftime('%d.%m %H:%M')}}
+                    </span>
+                    {% endif %}
+
+
                 </div>
-                <div class="products">
+                <details>
+                    <summary onclick="details(this)">Показать товары</summary>
+                    <div class="products">
                 {%for product in order.products%}
 
                 {%if product.amount %}
-                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                           placeholder="Поставщик">
-                    <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
-                           value="{{product.vendor.name}}"
-                           placeholder="Поставщик">
+                    <select class="col1" name="{{product.id}}:vendor_id">
+                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
+                    {% for vendor in product.product.vendors %}
+                    {% if vendor.id != product.vendor_id %}
+                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
                     <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
-                    <input class=" col3" type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                    <input class=" col3" type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
                            placeholder="Количество"
                            onchange="checkAmount(this)">
-                    <input class=" col4" type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
-                           placeholder="Ед">
+                    <select class="col4"  name = "{{product.id}}:unit_id">
+                        <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
+                        {% for unit in units%}
+                        {% if unit.id != product.unit_id %}
+                        <option value="{{unit.id}}">{{unit.designation}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+
+                        <input type="checkbox" name = "{{product.id}}:official" {% if not product.product.alco%} hidden {% endif %} {%if product.official %} checked {% endif %}>
+                        <label {% if not product.product.alco%} hidden {% endif %} > Офиц.</label>
+
                     <br>
+
                 {%else%}
-                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                           placeholder="Поставщик">
-                    <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
-                           value="{{product.vendor.name}}"
-                           placeholder="Поставщик">
+                    <select hidden class="col1 pid{{product.id}} space" name="{{product.id}}:vendor_id">
+                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
+                    {% for vendor in product.product.vendors %}
+                    {% if vendor.id != product.vendor_id %}
+                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
+                    {% endif %}
+                    {% endfor %}
+
+
+                </select>
                     <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
-                    <input class="col3 pid{{product.id}} space" hidden type="text" name="{{product.id}}:amount" value="{{product.amount}}"
+                    <input class="col3 pid{{product.id}} space" hidden type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
                            placeholder="Количество"
                            onchange="checkAmount(this)">
-                    <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
-                           placeholder="Ед">
-                    <br class="pid{{product.id}}" hidden>
+                    <select class="col4 pid{{product.id}} space" hidden name = "{{product.id}}:unit_id">
+                        <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
+                        {% for unit in units%}
+                        {% if unit.id != product.unit_id %}
+                        <option value="{{unit.id}}">{{unit.designation}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+
+                    <input hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} type="checkbox" name = "{{product.id}}:official" {%if product.official %} checked {% endif %}>
+                    <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офиц.</label>
+
+
                 {%endif%}
 
                 {%endfor%}
                 </div>
+                </details>
                 <select onchange="addProduct(this)">
                     <option value="placeholder">Добавить товар</option>
                 {%for product in order.products%}
@@ -218,8 +296,78 @@
         {%endif%}
         {%endfor%}
     </div>
+    <br>
 
+    <div class="orders_cat">
+        <h1>Удаленные заказы</h1>
+        {%for order in deleted_orders%}
+        {%if (order.facility_id == facility_id) or facility_id==0%}
+        <div class="db_el paddles">
+<form action="" method="post">
+                <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
+                <div class="order_header">
+                    Заказ #{{order.id}} для {{order.facility.name}}
 
+                    <span class="right">
+                        {% if order.status == "NEW" %} Новый {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
+                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                    </span>
+
+                    <br>
+                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    {% if order.status != "NEW" %}
+                    <span class="right">
+                        Удален {{order.delete_date.strftime('%d.%m %H:%M')}}
+                    </span>
+                    {% endif %}
+
+                </div>
+                <details>
+                    <summary onclick="details(this)">Показать товары</summary>
+                    <div class="products">
+                {%for product in order.products%}
+
+                {%if product.amount %}
+                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
+                           placeholder="Поставщик">
+                    <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
+                           value="{{product.vendor.name}}"
+                           placeholder="Поставщик">
+                    <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                    <input class=" col3" type="number" step="any" disabled name="{{product.id}}:amount" value="{{product.amount}}"
+                           placeholder="Количество"
+                           onchange="checkAmount(this)">
+                    <input class=" col4" type="text" disabled value="{{product.unit.designation if product.unit else ''}}"
+                           placeholder="Ед">
+                    <br>
+                {%else%}
+                    <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
+                           placeholder="Поставщик">
+                    <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
+                           value="{{product.vendor.name}}"
+                           placeholder="Поставщик">
+                    <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
+                    <input class="col3 pid{{product.id}} space" hidden type="number" step="any" disabled name="{{product.id}}:amount" value="{{product.amount}}"
+                           placeholder="Количество"
+                           onchange="checkAmount(this)">
+                    <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
+                           placeholder="Ед">
+                    <br class="pid{{product.id}}" hidden>
+                {%endif%}
+
+                {%endfor%}
+                </div>
+                </details>
+                    <br>
+
+                <input class = "micro_btn" type ="submit" name ="order:{{order.id}}" value="Восстановить">
+
+            </form>
+        </div>
+        {%endif%}
+        {%endfor%}
+    </div>
 
 
 
