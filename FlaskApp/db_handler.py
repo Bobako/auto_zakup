@@ -17,8 +17,9 @@ class User(Base):
     name = Column(String)
     surname = Column(String)
     position = Column(String)
-    facility_id = Column(Integer, ForeignKey("facility.id"))
-    facility = relationship("Facility", backref="users")
+    facility_id = Column(Integer)
+
+
     code = Column(String)
     is_admin = Column(Boolean)
 
@@ -29,14 +30,15 @@ class User(Base):
     def __repr__(self):
         return f"#{self.id} {self.name} {self.surname} - {self.position}; {self.is_authenticated}"
 
-    def __init__(self, name, surname, position, facility_id, code, is_admin):
+    def __init__(self, name, surname, position, facilities, code, is_admin):
         self.name = name
         self.surname = surname
         self.position = position
-        self.facility_id = facility_id
+        self.facilities = facilities
         self.code = code
         self.is_authenticated = False
         self.is_admin = is_admin
+
 
     def get_id(self):
         return self.id
@@ -48,6 +50,7 @@ class Facility(Base):
     name = Column(String)
     address = Column(String)
     tg_id = Column(Integer)
+    users = relationship('User', secondary='user_facilities_association', lazy='dynamic', backref='facilities')
 
     def __init__(self, name, address, tg_id):
         self.name = name
@@ -78,6 +81,13 @@ class Vendor(Base):
             self.products = products
         if facilities:
             self.facilities = facilities
+
+
+user_facilities_association = Table(
+    'user_facilities_association', Base.metadata,
+    Column('facility_id', Integer(), ForeignKey('facility.id'), primary_key=True),
+    Column('user_id', Integer(), ForeignKey('user.id'), primary_key=True),
+)
 
 
 facilities_association = Table(
@@ -228,7 +238,7 @@ class Handler:
             self.exist = True
 
     def create_admin(self):
-        self.session.add(User("Админ", "", "", None, "0000", True))
+        self.session.add(User("Админ", "", "", [], "0000", True))
         self.session.add(MSGFormat(DEFAULT_ORDER_FORMAT))
         self.session.add(Noti())
         self.session.commit()

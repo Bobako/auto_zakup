@@ -19,20 +19,15 @@
             <form id="new_order_form" action="" method="post">
                 <div class="order_header">
                     Новый заказ для
-                    <select id="new_order_facility" name="order:facility_id" {%if not user.is_admin%}disabled{%endif%}
+                    <select id="new_order_facility" name="order:facility_id"
                             onchange="get_available_products(this)">
                         <option value="placeholder">Выбрать заведение</option>
                         {%for facility in facilities%}
-                        {%if user.facility.name == facility.name%}
-                        <option selected value="{{facility.id}}">{{facility.name}}</option>
-                        {%else%}
+                        {%if facility in user.facilities or user.is_admin %}
                         <option value="{{facility.id}}">{{facility.name}}</option>
                         {%endif%}
                         {%endfor%}
                     </select>
-                    {%if not user.is_admin%}
-                    <input type="text" class="hidden" name="order:facility_id" value="{{user.facility_id}}">
-                    {%endif%}
                 </div>
                 <details>
                     <summary onclick="details(this)">Показать товары</summary>
@@ -53,11 +48,10 @@
 
     <div class="orders_cat">
         <h1>Новые заказы и дозаказы</h1>
-        {%if user.is_admin %}
         <h3>Сортировать по заведениям:
                 <select onchange="selectFacility(this)">
                     <option value=0>Все заведения</option>
-                    {%for facility in facilities%}
+                    {%for facility in user.facilities%}
                     {%if facility.id == facility_id%}
                     <option selected value="{{facility.id}}">{{facility.name}}</option>
                     {%else%}
@@ -66,7 +60,6 @@
                     {%endfor%}
                 </select>
         </h3>
-        {%endif%}
 
         {%for order in orders%}
         {%if (order.facility_id == facility_id) or facility_id==0%}

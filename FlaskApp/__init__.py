@@ -63,12 +63,6 @@ def users_page():
         return redirect(url_for("index"))
     if request.method == 'POST':
         users = parse_forms(request.form, ["is_admin"])
-        for user in users.values():
-            if user["facility_name"] == "Заведение":
-                user["facility_id"] = None
-            else:
-                user["facility_id"] = db.session.query(Facility).filter(Facility.name == user["facility_name"]).one().id
-            user.pop("facility_name")
         users[str(current_user.id)]["is_admin"] = True
         try:
             users[str(current_user.id)].pop("delete")
@@ -84,8 +78,18 @@ def users_page():
             else:
                 pins.append(user["code"])
 
-        print(users)
         if correct:
+            for user in users.values():
+                facilities = []
+                for key in user.keys():
+                    if 'fid_' in key:
+                        print(key)
+                        facility_id = int(key.replace('fid_', ''))
+                        facilities.append(db.session.query(Facility).filter(Facility.id == facility_id).one())
+                user["facilities"] = facilities
+                for facility in facilities:
+                    user.pop(f"fid_{facility.id}")
+
             update_objs(users, User)
     return render_template("users.html", users=db.session.query(User).all(),
                            facilities=db.session.query(Facility).all())
@@ -411,12 +415,13 @@ def index():
     col2 = max([len(product.name) for product in products] + [5])
     col3 = 3
     col4 = max([len(product.unit.designation) if product.unit else 2 for product in products] + [2])
-
     facility_id = request.args.get('fid')
     if not facility_id:
-        facility_id = 0
-    if not user.is_admin:
-        facility_id = user.facility_id
+        if user.facilities:
+            print(user.facilities)
+            facility_id = user.facilities[0].id
+        else:
+            facility_id = 0
     return render_template("orders.html", user=user, orders=orders, old_orders=old_orders,
                            products=products, days=DAYS,
                            vendors=vendors, facilities=db.session.query(Facility).all(),
@@ -430,7 +435,7 @@ def get_orders(user):
             Order.display == True).filter(Order.deleted == False).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status != "ORDERED").filter(
+            Order.facility_id.in_([f.id for f in user.facilities])).filter(Order.status != "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     return orders
 
@@ -441,7 +446,7 @@ def get_old_orders(user):
             Order.display == True).filter(Order.deleted == False).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
-            Order.facility_id == user.facility_id).filter(Order.status == "ORDERED").filter(
+            Order.facility_id.in_([f.id for f in user.facilities])).filter(Order.status == "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     return orders
 
@@ -452,7 +457,7 @@ def get_deleted_orders(user):
             Order.display == True).filter(Order.deleted == True).all()
     else:
         orders = db.session.query(Order).order_by(desc(Order.delete_date)).filter(
-            Order.facility_id == user.facility_id).filter(
+            Order.facility_id.in_([f.id for f in user.facilities])).filter(
             Order.display == True).filter(Order.deleted == True).all()
     for order in orders:
         if order.delete_date > datetime.datetime.now() + datetime.timedelta(days=30):
@@ -476,7 +481,7 @@ def create_order(order, user):
     parse_order_products(order, order_id)
     if not user.is_admin:
         bot.noti_admin(
-            f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} cоздал заказ "
+            f"{user.name} {user.surname} {'(' + db.session.query(Facility).filter(Facility.id == facility_id).one().name + ')'} cоздал заказ "
             f"#{order_id}", db.session.query(Facility).filter(Facility.id == facility_id).one().tg_id)
     return order_id
 
@@ -517,7 +522,7 @@ def update_order(order, order_id, user):
     db.session.commit()
     if not user.is_admin:
         bot.noti_admin(
-            f"{user.name} {user.surname} {'(' + user.facility.name + ')' if user.facility else ''} изменил заказ "
+            f"{user.name} {user.surname} {'(' + db.session.query(Facility).filter(Facility.id == order_obj.facility_id).one().name + ')'} изменил заказ "
             f"#{order_obj.id}", db.session.query(Facility).filter(Facility.id == order_obj.facility_id).one().tg_id)
     return order_id
 

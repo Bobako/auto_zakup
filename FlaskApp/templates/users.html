@@ -7,6 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="{{url_for('static', filename='new_el_button.js')}}"></script>
     <script src="{{url_for('static', filename='antidpr.js')}}"></script>
+    <script src="{{url_for('static', filename='vendors.js')}}"></script>
     <title>Users</title>
 </head>
 <body>
@@ -20,16 +21,17 @@
                 <input type="text" name="{{user.id}}:surname" placeholder="Фамилия" value="{{user.surname}}">
                 <input type="text" name="{{user.id}}:position" placeholder="Должность"
                        value="{{user.position}}">
-                <select class="short" name="{{user.id}}:facility_name">
-                    <option>Заведение</option>
+                <button type="button" class="fell_btn" onclick="fell(this)">Заведения</button>
+                <div class="fell_div fell_hidden">
                     {%for facility in facilities%}
-                    {%if user.facility.name == facility.name%}
-                    <option selected>{{facility.name}}</option>
+                    {%if facility in user.facilities%}
+                    <input type="checkbox" id="{{user.id}}:facility_id" checked name="{{user.id}}:fid_{{facility.id}}">
                     {%else%}
-                    <option>{{facility.name}}</option>
+                    <input type="checkbox" id="{{user.id}}:facility_id" name="{{user.id}}:fid_{{facility.id}}">
                     {%endif%}
+                    <label for="{{user.id}}:facility_id">{{facility.name}}</label><br>
                     {%endfor%}
-                </select>
+                </div>
                 <input type="text" name="{{user.id}}:code" placeholder="ПИН-код" value="{{user.code}}">
                 <span class="cb_span">
                 {%if user.is_admin%}
@@ -67,12 +69,13 @@
             <input type="text" name="NEW:name" placeholder="Имя">
             <input type="text" name="NEW:surname" placeholder="Фамилия">
             <input type="text" name="NEW:position" placeholder="Должность">
-            <select class="short" name="NEW:facility_name">
-                <option>Заведение</option>
-                {%for facility in facilities%}
-                <option>{{facility.name}}</option>
-                {%endfor%}
-            </select>
+            <button type="button" class="fell_btn" onclick="fell(this)">Заведения</button>
+                <div class="fell_div fell_hidden">
+                    {%for facility in facilities%}
+                    <input type="checkbox" name="NEW:fid_{{facility.id}}">
+                    <label>{{facility.name}}</label><br>
+                    {%endfor%}
+                </div>
             <input type="text" name="NEW:code" placeholder="ПИН-код">
             <span class="cb_span">
             <input type="checkbox" id="is_admin" name="NEW:is_admin">
