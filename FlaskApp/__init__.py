@@ -179,6 +179,8 @@ def products_page():
 
 
 def products_import(error, els=None):
+    if not els:
+        els = []
     already_exist = []
     not_found = []
     if not error:
