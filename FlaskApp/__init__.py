@@ -1,6 +1,8 @@
 import copy
 import datetime
 import os
+import sys
+import traceback
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
@@ -166,6 +168,9 @@ def products_page():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 els = parse_file(UPLOAD + "/" + filename)
             except Exception as ex:
+                msg, type_, tb = sys.exc_info()
+                print(f"Error: {msg}, {type_}")
+                traceback.print_tb(tb)
                 error = ex
                 els = None
             else:
@@ -232,10 +237,10 @@ def parse_file(filename):
                 break
             continue
         blanks = 0
-        el["vendor_name"] = sheet.cell(row, 1).value.strip()
-        el["product_name"] = sheet.cell(row, 2).value.strip()
-        el["unit_designation"] = sheet.cell(row, 3).value.strip()
-        el["facility_name"] = sheet.cell(row, 4).value.strip()
+        el["vendor_name"] = sheet.cell(row, 1).value.strip() if sheet.cell(row, 1).value else ''
+        el["product_name"] = sheet.cell(row, 2).value.strip() if sheet.cell(row, 2).value else ''
+        el["unit_designation"] = sheet.cell(row, 3).value.strip() if sheet.cell(row, 3).value else ''
+        el["facility_name"] = sheet.cell(row, 4).value.strip() if sheet.cell(row, 4).value else ''
         els.append(el)
     wb.close()
     return els
