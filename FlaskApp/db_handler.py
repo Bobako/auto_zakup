@@ -19,7 +19,6 @@ class User(Base):
     position = Column(String)
     facility_id = Column(Integer)
 
-
     code = Column(String)
     is_admin = Column(Boolean)
 
@@ -38,7 +37,6 @@ class User(Base):
         self.code = code
         self.is_authenticated = False
         self.is_admin = is_admin
-
 
     def get_id(self):
         return self.id
@@ -88,7 +86,6 @@ user_facilities_association = Table(
     Column('facility_id', Integer(), ForeignKey('facility.id'), primary_key=True),
     Column('user_id', Integer(), ForeignKey('user.id'), primary_key=True),
 )
-
 
 facilities_association = Table(
     'facilities_association', Base.metadata,
@@ -166,7 +163,6 @@ class Order(Base):
         self.sent_date = None
 
 
-
 class OrderedProduct(Base):
     __tablename__ = "ordered_product"
     id = Column(Integer, primary_key=True)
@@ -223,8 +219,9 @@ class Handler:
         self.session = sessionmaker(bind=engine, expire_on_commit=False)()
         if not self.exist:
             self.create_admin()
-        #self.null_trash()
+        # self.null_trash()
         self.drop_orders()
+        self.drop_duplicates()
         print("База данных подключена.")
 
     def db_exist(self):
@@ -257,6 +254,19 @@ class Handler:
             self.session.delete(order)
         self.session.commit()
 
+    def drop_duplicates(self):
+        vendors = self.session.query(Vendor).all()
+        for vendor in vendors:
+            times = {}
+            for product in vendor.products:
+                if product in times:
+                    times[product] += 1
+                else:
+                    times[product] = 1
+            for product, value in times.items():
+                if value > 1:
+                    self.session.delete(product)
+        self.session.commit()
 
 
 def delete_products(base=Base):

@@ -2,7 +2,9 @@ import copy
 import datetime
 import os
 import sys
+import time
 import traceback
+from functools import wraps
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
@@ -13,6 +15,8 @@ from FlaskApp.db_handler import *
 from FlaskApp.bot import Bot
 from FlaskApp.cfg import *
 
+
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD
 db = Handler()
@@ -22,6 +26,17 @@ bot = Bot(db.session)
 
 DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
 
+
+def access_log(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        start = time.perf_counter()
+        r = f(*args, **kwargs)
+        fin = time.perf_counter()
+        with open(LOGS_PATH, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - {f.__name__}, time: {fin-start:0.4f}\n")
+        return r
+    return wrap
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -38,6 +53,7 @@ def load_user(user_id):
 
 
 @app.route("/login", methods=['post', 'get'])
+@access_log
 def login():
     if current_user:
         db_logout(current_user)
@@ -57,8 +73,10 @@ def login():
     return render_template("login.html")
 
 
+
 @app.route("/users", methods=['post', 'get'])
 @login_required
+@access_log
 def users_page():
     user = current_user
     if not user.is_admin:
@@ -99,6 +117,7 @@ def users_page():
 
 @app.route("/facilities", methods=['post', 'get'])
 @login_required
+@access_log
 def facilities_page():
     user = current_user
     if not user.is_admin:
@@ -121,6 +140,7 @@ def facilities_page():
 
 @app.route("/units", methods=['post', 'get'])
 @login_required
+@access_log
 def units_page():
     user = current_user
     if not user.is_admin:
@@ -144,6 +164,7 @@ def units_page():
 
 @app.route("/products", methods=['post', 'get'])
 @login_required
+@access_log
 def products_page():
     user = current_user
     if not user.is_admin:
@@ -250,6 +271,7 @@ def parse_file(filename):
 
 @app.route("/vendors", methods=['post', 'get'])
 @login_required
+@access_log
 def vendors_page():
     user = current_user
     if not user.is_admin:
@@ -307,6 +329,7 @@ def update_orders(vendor_id, products, facilities):
 
 @app.route("/preview", methods=['post', 'get'])
 @login_required
+@access_log
 def preview():
     user = current_user
     if not user.is_admin:
@@ -380,6 +403,7 @@ def copy_order(order):
 
 @app.route("/order_format", methods=['post', 'get'])
 @login_required
+@access_log
 def order_format():
     user = current_user
     if not user.is_admin:
@@ -400,6 +424,7 @@ def order_format():
 
 @app.route("/", methods=['post', 'get'])
 @login_required
+@access_log
 def index():
     user = current_user
     if request.method == 'POST':
@@ -553,12 +578,6 @@ def formatted_order():
                            order=order, vendor=vendor).replace("\n", "").replace("<br>", "\n")
 
 
-@app.route("/orders_admin", methods=['post', 'get'])
-@login_required
-def orders_admin_page():
-    return
-
-
 def merge_sort(stats: list, func):
     l = len(stats)
     if l < 2:
@@ -599,6 +618,7 @@ sf = less
 
 @app.route("/stats", methods=['post', 'get'])
 @login_required
+@access_log
 def stats_page():
     global sf
     if request.method == "POST":
@@ -624,12 +644,14 @@ def stats_page():
 
 @app.route("/logs", methods=['post', 'get'])
 @login_required
+@access_log
 def logs_page():
     return
 
 
 @app.route("/notifications", methods=['post', 'get'])
 @login_required
+@access_log
 def noti_page():
     if request.method == "POST":
         noti = db.session.query(Noti).one()
@@ -704,4 +726,4 @@ def update_objs(dicts, class_, not_nullable="name"):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
