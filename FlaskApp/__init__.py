@@ -273,6 +273,7 @@ def parse_file(filename):
 @login_required
 @access_log
 def vendors_page():
+    start = time.perf_counter()
     user = current_user
     if not user.is_admin:
         return redirect(url_for("index"))
@@ -310,7 +311,9 @@ def vendors_page():
             one_vendor = {id_: vendor}
             vendor_id = update_objs(one_vendor, Vendor)[0]
             update_orders(vendor_id, vendor["products"], vendor["facilities"])
-
+    fin = time.perf_counter()
+    with open(LOGS_PATH, "a") as file:
+        file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - vendors without rendering, time: {fin - start:0.4f}\n")
     return render_template("vendors.html", vendors=db.session.query(Vendor).all(),
                            facilities=db.session.query(Facility).all(),
                            products=db.session.query(Product).all(), days=DAYS)
@@ -522,6 +525,12 @@ def create_order(order, user):
 
 def parse_order_products(order, order_id):
     for product_id, product_dict in order.items():
+
+        try:
+            product_dict["amount"] = float(product_dict["amount"])
+        except ValueError:
+            product_dict["amount"] = 0.0
+
         if "NEW" in product_id:
             db.session.add(OrderedProduct(product_dict["product_id"], product_dict["amount"], product_dict["vendor_id"],
                                           order_id, product_dict["unit_id"], product_dict["official"]))
@@ -634,10 +643,9 @@ def stats_page():
                 stats.append(
                     [f"{product.name} ({vendor.name})", sum([bool(order.amount) for order in orders]),
                      sum([order.amount for order in orders]),
-                     product.unit.designation])
-
+                     product.unit.designation if product.unit else 'Ед.'])
             else:
-                stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation])
+                stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation if product.unit else 'Ед.'])
     return render_template("stats.html",
                            products=merge_sort(stats, sf))
 

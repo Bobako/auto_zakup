@@ -172,7 +172,7 @@ class OrderedProduct(Base):
     product = relationship("Product", backref="ordered")
     vendor_id = Column(Integer, ForeignKey("vendor.id"))
     vendor = relationship("Vendor", backref="ordered")
-    amount = Column(Integer)
+    amount = Column(Float)
     unit_id = Column(Integer, ForeignKey("unit.id"))
     unit = relationship("Unit", backref="ordered")
     official = Column(Boolean)
@@ -219,7 +219,7 @@ class Handler:
         self.session = sessionmaker(bind=engine, expire_on_commit=False)()
         if not self.exist:
             self.create_admin()
-        # self.null_trash()
+        self.null_trash()
         self.drop_orders()
         self.drop_duplicates()
         print("База данных подключена.")
@@ -257,15 +257,12 @@ class Handler:
     def drop_duplicates(self):
         vendors = self.session.query(Vendor).all()
         for vendor in vendors:
-            times = {}
+            duplicates = []
             for product in vendor.products:
-                if product in times:
-                    times[product] += 1
-                else:
-                    times[product] = 1
-            for product, value in times.items():
-                if value > 1:
+                if product.name in duplicates:
                     self.session.delete(product)
+                else:
+                    duplicates.append(product.name)
         self.session.commit()
 
 
