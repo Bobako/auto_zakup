@@ -49,3 +49,36 @@ function fell(btn) {
         $(div).addClass("fell_hidden");
     }
 }
+
+function live_search(vid, field, e){
+    if (e.key == "Enter"){
+        return;
+    }
+
+    if ($(field).val().length < 2){
+        return;;
+    }
+    let wrapper = $(field).parent().find('.advice_wrapper');
+    var req = new XMLHttpRequest();
+    req.open("GET", "/api/search?s=" + $(field).val(), false);
+    req.send(null);
+
+    $(wrapper).empty();
+    $(wrapper).append(req.responseText);
+}
+
+function addEl(button, pid){
+    var multi_box = $(button).parent().parent();
+    var func = `onclick="removeElement(this, '` + 'product' + `')"`;
+    multi_box.append("<span class=\"multi_el\" id = \"" + pid + "\"" + func + ">" + button.innerHTML + "</span>");
+    var form = $(multi_box.parent().find('.' + 'product'));
+    form.val(form.val() + pid + ":");
+    var field = multi_box.find('input');
+    var wrapper = multi_box.find('.advice_wrapper');
+    $(field).remove();
+    $(wrapper).remove();
+    $(multi_box).append(field);
+    $(multi_box).append(wrapper);
+    multi_box.find('input').val('');
+    multi_box.find('.advice_wrapper').empty();
+}

@@ -48,16 +48,9 @@
                         {{product.name}}
                     </span>
                         {%endfor%}
-
-                        <select onchange="addElement(this, 'product')">
-                            <option value="placeholder">Новый товар</option>
-                            {%for product in products%}
-                            {%if product not in vendor.products%}
-                            <option value={{product.id}}>{{product.name}}</option>
-                            {%endif%}
-                            {%endfor%}
-                        </select>
-
+                        <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                        onkeyup="live_search({{vendor.id}}, this, event)"><br>
+                        <div class="advice_wrapper"></div>
                     </div>
 
 
@@ -112,12 +105,9 @@
                 <input class="hidden product" type="text" name="NEW:products_ids"
                        value="">
                 <div class="multi_box">
-                    <select onchange="addElement(this, 'product')">
-                        <option value="placeholder">Новый товар</option>
-                        {%for product in products%}
-                        <option value={{product.id}}>{{product.name}}</option>
-                        {%endfor%}
-                    </select>
+                    <input type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                        onkeyup="live_search(0, this, event)"><br>
+                    <div class="advice_wrapper"></div>
 
                 </div>
 

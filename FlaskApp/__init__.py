@@ -587,6 +587,17 @@ def formatted_order():
                            order=order, vendor=vendor).replace("\n", "").replace("<br>", "\n")
 
 
+@app.route("/api/search", methods=['get'])
+def search():
+    s = request.args.get('s')
+    if s:
+        products = db.session.query(Product).filter(Product.name.ilike(f"%{s}%")).order_by(Product.name).all()
+        res = ""
+        for product in products:
+            res += f'<button class="hint" type="button" onclick="addEl(this, {product.id})">{product.name}</button><br>'
+        return res
+    return ''
+
 def merge_sort(stats: list, func):
     l = len(stats)
     if l < 2:

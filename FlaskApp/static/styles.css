@@ -376,10 +376,23 @@ details summary::marker { content: ""; }
         right: 0;
     }
 
-    .space{
-    margin-right: 9.3px !important;
+    .space {
+        margin-right: 9.3px !important;
+    }
+    .live_search{
+        min-width: 80%;
+        min-height: 30px;
+        display: block;
+    }
+    .hint{
+        min-width: 150px;
+        min-height: 25px;
+        text-align: left;
+        margin-left:5px;
+        margin-bottom: 3px;
+    }
 }
-}
+
 
 
 @media (max-width: 999.98px) {
@@ -678,5 +691,21 @@ details summary::marker { content: ""; }
 
     .hiden_nav_button {
         right: 0;
+    }
+
+    .live_search{
+        min-width: 220px;
+        min-height: 50px;
+        display: block;
+        font-size: 26px !important;
+    }
+    .hint{
+        min-width: 220px;
+        min-height: 40px;
+        font-size: 24px;
+        text-align: left;
+    }
+    .advice_wrapper{
+
     }
 }
