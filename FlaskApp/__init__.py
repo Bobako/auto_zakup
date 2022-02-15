@@ -153,12 +153,8 @@ def products_page():
         if "products" in products:
             products.pop("products")
         for product in products.values():
-            if product["unit_designation"] == "Единицы измерения":
+            if not product["unit_id"]:
                 product["unit_id"] = None
-            else:
-                product["unit_id"] = db.session.query(Unit).filter(
-                    Unit.designation == product["unit_designation"]).one().id
-            product.pop("unit_designation")
 
         update_objs(products, Product)
         file = request.files["products:file"]

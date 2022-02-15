@@ -18,13 +18,13 @@
             <div class="db_el">
                 <input class="long" type="text" name="{{product.id}}:name" placeholder="Имя" value="{{product.name}}">
 
-                <select class="short" name="{{product.id}}:unit_designation">
-                    <option>Единицы измерения</option>
+                <select class="short" name="{{product.id}}:unit_id">
+                    <option value=0>Единицы измерения</option>
                     {%for unit in units%}
                     {%if product.unit.designation == unit.designation%}
-                    <option selected>{{unit.designation}}</option>
+                    <option selected value="{{unit.id}}">{{unit.designation}}</option>
                     {%else%}
-                    <option>{{unit.designation}}</option>
+                    <option value="{{unit.id}}">{{unit.designation}}</option>
                     {%endif%}
                     {%endfor%}
                 </select>
@@ -52,10 +52,10 @@
         <div class="template">
             <input class="long" type="text" name="NEW:name" placeholder="Имя">
 
-            <select class="short" name="NEW:unit_designation">
+            <select class="short" name="NEW:unit_id">
                 <option>Единицы измерения</option>
                 {%for unit in units%}
-                <option>{{unit.designation}}</option>
+                <option value="{{unit.id}}">{{unit.designation}}</option>
                 {%endfor%}
             </select>
 
