@@ -152,9 +152,15 @@ def products_page():
         products = parse_forms(request.form, ["alco"])
         if "products" in products:
             products.pop("products")
-        for product in products.values():
-            if not product["unit_id"]:
-                product["unit_id"] = None
+        strange = []
+        for key, product in products.items():
+            if "unit_id" not in product:
+                strange.append(key)
+            else:
+                if not int(product["unit_id"]):
+                    product["unit_id"] = None
+        for strange_ in strange:
+            products.pop(strange_)
 
         update_objs(products, Product)
         file = request.files["products:file"]
