@@ -216,7 +216,9 @@ def products_import(error, els=None):
             vendor = db.session.query(Vendor).filter(Vendor.name == el["vendor_name"]).first()
             product = db.session.query(Product).filter(Product.name == el["product_name"]).first()
             unit = db.session.query(Unit).filter(Unit.designation == el["unit_designation"]).first()
-            facility = db.session.query(Facility).filter(Facility.name == el["facility_name"]).first()
+            facilities = []
+            for f_name in el["facilities_names"]:
+                facilities.append(db.session.query(Facility).filter(Facility.name == f_name).first())
 
             if not vendor:
                 not_found.append(f"{el['product_name']} -  нет поставщика '{el['vendor_name']}'")
@@ -231,15 +233,14 @@ def products_import(error, els=None):
                 not_found.append(f"{el['product_name']} -  нет ед. измерения '{el['unit_designation']}'")
                 continue
 
-            if not facility:
-                not_found.append(f"{el['product_name']} -  нет заведения '{el['facility_name']}'")
-                continue
             if not product:
                 product = Product(el["product_name"], unit.id, False)
                 db.session.add(product)
             vendor.products.append(product)
-            if facility not in vendor.facilities:
-                vendor.facilities.append(facility)
+            for facility in facilities:
+                if facility:
+                    if facility not in vendor.facilities:
+                        vendor.facilities.append(facility)
             db.session.commit()
     l = len(els) - len(already_exist) - len(not_found)
     return render_template("products_import.html", error=error, already_exist=already_exist, not_found=not_found, l=l)
@@ -263,7 +264,11 @@ def parse_file(filename):
         el["vendor_name"] = sheet.cell(row, 1).value.strip() if sheet.cell(row, 1).value else ''
         el["product_name"] = sheet.cell(row, 2).value.strip() if sheet.cell(row, 2).value else ''
         el["unit_designation"] = sheet.cell(row, 3).value.strip() if sheet.cell(row, 3).value else ''
-        el["facility_name"] = sheet.cell(row, 4).value.strip() if sheet.cell(row, 4).value else ''
+        col = 4
+        el["facilities_names"] = []
+        while sheet.cell(row, col).value:
+            el["facilities_names"].append(sheet.cell(row, col).value.strip() if sheet.cell(row, col).value else '')
+            col += 1
         els.append(el)
     wb.close()
     return els
