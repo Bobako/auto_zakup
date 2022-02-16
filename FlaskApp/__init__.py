@@ -315,7 +315,7 @@ def vendors_page():
             try:
                 vendor["tg_id"] = int(vendor["tg_id"])
             except ValueError:
-                vendor["tg_id"] = None
+                vendor["tg_id"] = ''
 
             one_vendor = {id_: vendor}
             vendor_id = update_objs(one_vendor, Vendor)[0]
