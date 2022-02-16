@@ -234,9 +234,9 @@ def products_import(error, els=None):
             if not facility:
                 not_found.append(f"{el['product_name']} -  нет заведения '{el['facility_name']}'")
                 continue
-
-            product = Product(el["product_name"], unit.id, False)
-            db.session.add(product)
+            if not product:
+                product = Product(el["product_name"], unit.id, False)
+                db.session.add(product)
             vendor.products.append(product)
             if facility not in vendor.facilities:
                 vendor.facilities.append(facility)

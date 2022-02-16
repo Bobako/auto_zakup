@@ -13,7 +13,7 @@
 <main>
     <h1>{%if error%} {{error}} {%else%} Импорт {%endif%}</h1>
     Импортировано: {{l}}
-    {% if not_found %}
+    {% if already_exist %}
     <div>
     <h3>Уже существуют:</h3>
         {% for el in already_exist %}

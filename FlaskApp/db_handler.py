@@ -255,14 +255,15 @@ class Handler:
         self.session.commit()
 
     def drop_duplicates(self):
-        vendors = self.session.query(Vendor).all()
-        for vendor in vendors:
-            duplicates = []
-            for product in vendor.products:
-                if product.name in duplicates:
-                    self.session.delete(product)
-                else:
-                    duplicates.append(product.name)
+        products = self.session.query(Product).all()
+        unics = {}  # name: product
+        for product in products:
+            if product.name in unics:
+                for vendor in product.vendors:
+                    unics[product.name].vendors.append(vendor)
+                self.session.delete(product)
+            else:
+                unics[product.name] = product
         self.session.commit()
 
 

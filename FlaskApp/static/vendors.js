@@ -56,7 +56,9 @@ function live_search(vid, field, e){
     }
 
     if ($(field).val().length < 2){
-        return;;
+        let wrapper = $(field).parent().find('.advice_wrapper');
+        $(wrapper).empty();
+        return;
     }
     let wrapper = $(field).parent().find('.advice_wrapper');
     var req = new XMLHttpRequest();
