@@ -312,6 +312,10 @@ def vendors_page():
             for i in range(7):
                 if "schedule" + str(i) in vendor:
                     vendor.pop("schedule" + str(i))
+            try:
+                vendor["tg_id"] = int(vendor["tg_id"])
+            except ValueError:
+                vendor["tg_id"] = None
 
             one_vendor = {id_: vendor}
             vendor_id = update_objs(one_vendor, Vendor)[0]
