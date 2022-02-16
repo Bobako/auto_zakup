@@ -202,7 +202,7 @@ def products_page():
                 os.remove(UPLOAD + "/" + filename)
                 return products_import(error, els)
 
-    return render_template("products.html", products=db.session.query(Product).all(),
+    return render_template("products.html", products=db.session.query(Product).order_by(Product.name).all(),
                            units=db.session.query(Unit).all())
 
 
