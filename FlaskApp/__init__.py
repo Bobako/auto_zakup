@@ -363,7 +363,11 @@ def preview():
             if product.vendor not in vendors:
                 vendors.append(product.vendor)
 
-    return render_template("preview.html", order=order, vendors=vendors)
+    able = True
+    for vendor in vendors:
+        if not vendor.tg_id:
+            able = False
+    return render_template("preview.html", order=order, vendors=vendors, able=able)
 
 
 def previewable_order(order):
@@ -395,7 +399,7 @@ def send_order(order, msgs):  # msgs - {vendor.id:msg}
 
 def copy_order(order):
     if order.copy_id:
-        for product in db.session.query(Order).filter(Order.id == order.copy_id).one():
+        for product in db.session.query(Order).filter(Order.id == order.copy_id).one().products:
             db.session.delete(product)
     else:
         new_order = Order(None, None, None, None, False)

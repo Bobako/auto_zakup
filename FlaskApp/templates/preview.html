@@ -16,12 +16,19 @@
         <form action="" method="post">
             {%for vendor in vendors%}
             <p>
-                Сообщение для {{vendor.name}}
+                Сообщение для {{vendor.name}} {%if not vendor.tg_id %} (Не возможно отправить: не задан ID чата)
+                <textarea disabled name="{{vendor.id}}:msg" id="{{vendor.id}}"></textarea>
+                {% else %}
                 <textarea name="{{vendor.id}}:msg" id="{{vendor.id}}"></textarea>
+                {% endif %}
             </p>
             {%endfor%}
             <input class="micro_btn" type="submit" value="Назад">
+            {% if not able %}
+            <input class="micro_btn right" type="submit" name="order:confirm" disabled value="Отправить">
+            {% else %}
             <input class="micro_btn right" type="submit" name="order:confirm" value="Отправить">
+            {% endif %}
         </form>
 
     </div>
