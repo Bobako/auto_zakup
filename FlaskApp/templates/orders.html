@@ -145,14 +145,9 @@
                 {%endfor%}
                 </div>
                 </details>
-                <select onchange="addProduct(this)">
-                    <option value="placeholder">Добавить товар</option>
-                {%for product in order.products%}
-                {%if not product.amount %}
-                    <option value="pid{{product.id}}">{{product.vendor.name}} - {{product.product.name}}</option>
-                {%endif%}
-                {%endfor%}
-                </select>
+                <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                        onkeyup="live_search({{order.id}}, this, event)"><br>
+                <div class="advice_wrapper"></div>
                 <br>
                 {%if user.is_admin%}
                 <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
@@ -263,14 +258,9 @@
                 {%endfor%}
                 </div>
                 </details>
-                <select onchange="addProduct(this)">
-                    <option value="placeholder">Добавить товар</option>
-                {%for product in order.products%}
-                {%if not product.amount %}
-                    <option value="pid{{product.id}}">{{product.vendor.name}} - {{product.product.name}}</option>
-                {%endif%}
-                {%endfor%}
-                </select>
+                <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                        onkeyup="live_search({{order.id}}, this, event)"><br>
+                <div class="advice_wrapper"></div>
                 <br>
 
                 {%if user.is_admin%}

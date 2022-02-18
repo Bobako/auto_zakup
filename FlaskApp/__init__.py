@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, asc
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 import openpyxl
+from fuzzywuzzy import process
 
 from FlaskApp.db_handler import *
 from FlaskApp.bot import Bot
@@ -623,6 +624,27 @@ def search():
             res += f'<button class="hint" type="button" onclick="addEl(this, {product.id})">{product.name}</button><br>'
         return res
     return ''
+
+
+@app.route("/api/order_search", methods=['get'])
+def orders_search():
+    s = request.args.get('s')
+    if s:
+        order_id = request.args.get('oid')
+        products = db.session.query(OrderedProduct).filter(OrderedProduct.order_id == order_id).all()
+        products = {product.product.name: product for product in products}
+
+        nices = process.extract(s, list(products.keys()), limit=10)
+        nices = [nice[0] for nice in nices]
+
+        products = [products[nice] for nice in nices]
+
+        res = ""
+        for product in products:
+            res += f'<button class="hint" type="button" onclick="addProduct(this, {product.id})">{product.vendor.name} - {product.product.name}</button><br>'
+        return res
+    return ''
+
 
 def merge_sort(stats: list, func):
     l = len(stats)

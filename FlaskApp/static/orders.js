@@ -51,18 +51,10 @@ function selectFacility(selector){
     window.location.href = "/?fid="+String(fac_id);
 }
 
-function addProduct(selector){
-    var pid = $(selector).val();
-    if (pid == "placeholder"){
-        return;
-    }
-
-    var el = $(selector).find('option:selected');
-    $(el).remove();
-
+function addProduct(button, pid){
     let els = $("."+pid);
     els.remove();
-    var form = $(selector).parent().find('.products');
+    var form = $(button).parent().parent().find('.products');
     form.append(els);
     form.append("<br>")
     $("."+pid).removeAttr("hidden");
@@ -76,4 +68,23 @@ function details(summary){
         $(summary).html("Показать товары");
     }
 
+}
+
+function live_search(oid, field, e){
+    if (e.key == "Enter"){
+        return;
+    }
+
+    if ($(field).val().length < 2){
+        let wrapper = $(field).parent().find('.advice_wrapper');
+        $(wrapper).empty();
+        return;
+    }
+    let wrapper = $(field).parent().find('.advice_wrapper');
+    var req = new XMLHttpRequest();
+    req.open("GET", "/api/order_search?oid="+String(oid) +"&s=" + $(field).val(), false);
+    req.send(null);
+
+    $(wrapper).empty();
+    $(wrapper).append(req.responseText);
 }
