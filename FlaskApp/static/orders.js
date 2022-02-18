@@ -2,6 +2,12 @@ $(document).ready(function () {
     var selector = $("#new_order_facility");
     get_available_products(selector);
 
+    $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
 
 });
 
@@ -62,6 +68,9 @@ function addProduct(button, pid){
     form.append(els);
     form.append("<br>")
     $(".pid"+pid).removeAttr("hidden");
+    $(button).parent().parent().find(".live_search").val('');
+    $(button).parent().empty();
+
 }
 
 function details(summary){
