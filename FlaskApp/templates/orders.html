@@ -29,12 +29,13 @@
                         {%endfor%}
                     </select>
                 </div>
-                <details>
-                    <summary onclick="details(this)">Показать товары</summary>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail1')">Показать товары</button>
+                <div hidden id = "detail1">
+
                     <div id="new_order_placeholder">
 
                     </div>
-                </details>
+                </div>
                 {%if user.is_admin%}
                 <input class="micro_btn right" type="submit" name="order:new" value="Подтвердить">
                 {%else%}
@@ -82,8 +83,8 @@
                     {% endif %}
 
                 </div>
-                <details>
-                    <summary onclick="details(this)">Показать товары</summary>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail2')">Показать товары</button>
+                <div hidden id = "detail2">
                     <div class="products">
                 {%for product in order.products%}
                 {%if product.amount %}
@@ -144,7 +145,7 @@
                 {%endif%}
                 {%endfor%}
                 </div>
-                </details>
+                </div>
                 <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
                         onkeyup="live_search({{order.id}}, this, event)"><br>
                 <div class="advice_wrapper"></div>
@@ -193,8 +194,8 @@
 
 
                 </div>
-                <details>
-                    <summary onclick="details(this)">Показать товары</summary>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail3')">Показать товары</button>
+                <div hidden id = "detail3">
                     <div class="products">
                 {%for product in order.products%}
 
@@ -257,7 +258,7 @@
 
                 {%endfor%}
                 </div>
-                </details>
+                </div>
                 <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
                         onkeyup="live_search({{order.id}}, this, event)"><br>
                 <div class="advice_wrapper"></div>
@@ -306,8 +307,8 @@
                     {% endif %}
 
                 </div>
-                <details>
-                    <summary onclick="details(this)">Показать товары</summary>
+                <button  type="button" class="summary" onclick="toggleDetails(this, 'detail4')">Показать товары</button>
+                <div hidden id = "detail4">
                     <div class="products">
                 {%for product in order.products%}
 
@@ -341,7 +342,7 @@
 
                 {%endfor%}
                 </div>
-                </details>
+                </div>
                     <br>
 
                 <input class = "micro_btn" type ="submit" name ="order:{{order.id}}" value="Восстановить">

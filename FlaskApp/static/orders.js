@@ -101,3 +101,14 @@ function live_search(oid, field, e){
     $(wrapper).empty();
     $(wrapper).append(req.responseText);
 }
+
+function toggleDetails(button, did){
+    if (button.innerHTML == "Показать товары"){
+        $(button).html("Скрыть товары");
+        $("#"+did).removeAttr("hidden");
+    }
+    else{
+        $(button).html("Показать товары");
+        $("#"+did).attr("hidden", "");
+    }
+}

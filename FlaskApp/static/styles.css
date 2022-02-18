@@ -102,21 +102,22 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 @media (min-width: 1000px) {
-    details summary::-webkit-details-marker { display: none; }
-details summary::marker { content: ""; }
     main {
         width: 1000px;
         margin: auto;
     }
 
-    details summary{
+    .summary{
     cursor: pointer;
     outline-style: none;
+        background-color: white;
     text-decoration: underline black;
+        border: none;
     margin: 5px;
     display: block;
     height: 29px;
-}
+        font-size: 16px;
+    }
 
 
     .btn:hover {
@@ -711,5 +712,17 @@ details summary::marker { content: ""; }
     }
     .advice_wrapper{
 
+    }
+
+    .summary{
+    cursor: pointer;
+    outline-style: none;
+        background-color: white;
+    text-decoration: underline black;
+        border: none;
+    margin: 10px;
+    display: block;
+    height: 60px;
+        font-size: 24px;
     }
 }
