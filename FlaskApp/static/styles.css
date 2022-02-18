@@ -98,11 +98,12 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
-details summary::-webkit-details-marker { display: none; }
-details summary::marker { content: ""; }
+
 
 
 @media (min-width: 1000px) {
+    details summary::-webkit-details-marker { display: none; }
+details summary::marker { content: ""; }
     main {
         width: 1000px;
         margin: auto;
@@ -402,11 +403,14 @@ details summary::marker { content: ""; }
 }
 
     details summary{
+        /*
     cursor: pointer;
     outline-style: none;
     text-decoration: underline black;
     margin: 10px;
     display: block;
+
+         */
     height: 55px;
     font-size: 24px;
 }
