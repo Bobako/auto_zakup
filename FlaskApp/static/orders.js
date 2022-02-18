@@ -52,12 +52,16 @@ function selectFacility(selector){
 }
 
 function addProduct(button, pid){
-    let els = $("."+pid);
+    let els = $(".pid"+pid);
+    if (!$(els).is("[hidden]")){
+        return
+    }
+    console.log(".pid"+pid);
     els.remove();
     var form = $(button).parent().parent().find('.products');
     form.append(els);
     form.append("<br>")
-    $("."+pid).removeAttr("hidden");
+    $(".pid"+pid).removeAttr("hidden");
 }
 
 function details(summary){
