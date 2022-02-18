@@ -318,8 +318,12 @@ def vendors_page():
                 vendor["tg_id"] = ''
 
             one_vendor = {id_: vendor}
-            vendor_id = update_objs(one_vendor, Vendor)[0]
-            update_orders(vendor_id, vendor["products"], vendor["facilities"])
+            if 'delete' in vendor:
+                update_orders(id_, vendor["products"], vendor["facilities"], True)
+                update_objs(one_vendor, Vendor)
+            else:
+                vendor_id = update_objs(one_vendor, Vendor)[0]
+                update_orders(vendor_id, vendor["products"], vendor["facilities"])
     fin = time.perf_counter()
     with open(LOGS_PATH, "a") as file:
         file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - vendors without rendering, time: {fin - start:0.4f}\n")
@@ -328,14 +332,24 @@ def vendors_page():
                            products=db.session.query(Product).all(), days=DAYS)
 
 
-def update_orders(vendor_id, products, facilities):
-    for facility in facilities:
-        for order in facility.orders:
-            ordered = order.products
-            ordered_products = [ordered_.product for ordered_ in ordered]
-            for product in products:
-                if product not in ordered_products:
-                    db.session.add(OrderedProduct(product.id, 0, vendor_id, order.id, product.unit_id, True))
+def update_orders(vendor_id, products, facilities, delete=False):
+    if not delete:
+        for facility in facilities:
+            for order in facility.orders:
+                ordered = order.products
+                ordered_products = [ordered_.product for ordered_ in ordered]
+                for product in products:
+                    if product not in ordered_products:
+                        db.session.add(OrderedProduct(product.id, 0, vendor_id, order.id, product.unit_id, True))
+    else:
+        products = db.session.query(OrderedProduct).filter(OrderedProduct.vendor_id == vendor_id).all()
+        for product in products:
+            order = product.order
+            op = order.products
+            op = [prod for prod in op if prod.id != product.id]
+            order.products = op
+            db.session.delete(product)
+            db.session.commit()
     db.session.commit()
 
 
@@ -461,14 +475,13 @@ def index():
     vendors = db.session.query(Vendor).all()
     products = db.session.query(Product).all()
 
-    col1 = max([len(vendor.name) for vendor in vendors] + [5])
-    col2 = max([len(product.name) for product in products] + [5])
+    col1 = max([len(str(vendor.name)) for vendor in vendors] + [5])
+    col2 = max([len(str(product.name)) for product in products] + [5])
     col3 = 3
-    col4 = max([len(product.unit.designation) if product.unit else 2 for product in products] + [2])
+    col4 = max([len(str(product.unit.designation)) if product.unit else 2 for product in products] + [2])
     facility_id = request.args.get('fid')
     if not facility_id:
         if user.facilities:
-            print(user.facilities)
             facility_id = user.facilities[0].id
         else:
             facility_id = 0
