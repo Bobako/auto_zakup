@@ -11,15 +11,15 @@
 </head>
 <body>
 <main>
-    <h1>Товары</h1>
+    <h1>Товари</h1>
     <div id="products">
         <form enctype="multipart/form-data" id="products_form" action="" method="post">
             {%for product in products%}
             <div class="db_el">
-                <input class="long" type="text" name="{{product.id}}:name" placeholder="Имя" value="{{product.name}}">
+                <input class="long" type="text" name="{{product.id}}:name" placeholder="Імя" value="{{product.name}}">
 
                 <select class="short" name="{{product.id}}:unit_id">
-                    <option value=0>Единицы измерения</option>
+                    <option value=0>Од. виміру</option>
                     {%for unit in units%}
                     {%if product.unit.designation == unit.designation%}
                     <option selected value="{{unit.id}}">{{unit.designation}}</option>
@@ -37,7 +37,7 @@
 
                 <span class="cb_span right">
                 <input class=" norm" type="checkbox" id="{{product.id}}:delete" name="{{product.id}}:delete">
-                <label class=" norm" for="{{product.id}}:delete">Удалить</label>
+                <label class=" norm" for="{{product.id}}:delete">Видалити</label>
                 </span>
             </div>
             {%endfor%}
@@ -45,15 +45,15 @@
 
             </div>
             <input class="micro_btn right" type="file" name="products:file"><br><br><br><br><br><br>
-            <input class="micro_btn right" type="submit" value="Сохранить">
+            <input class="micro_btn right" type="submit" value="Зберегти">
         </form>
-        <button class="micro_btn" id="new_el_button">Новый товар</button>
+        <button class="micro_btn" id="new_el_button">Новий товар</button>
 
         <div class="template">
-            <input class="long" type="text" name="NEW:name" placeholder="Имя">
+            <input class="long" type="text" name="NEW:name" placeholder="Імя">
 
             <select class="short" name="NEW:unit_id">
-                <option>Единицы измерения</option>
+                <option>Од. виміру</option>
                 {%for unit in units%}
                 <option value="{{unit.id}}">{{unit.designation}}</option>
                 {%endfor%}
@@ -72,16 +72,16 @@
 <nav>
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
-        <a href="{{url_for('index')}}">Заказы</a>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a>
-        <a href="{{url_for('facilities_page')}}">Заведения</a>
-        <a href="{{url_for('users_page')}}">Пользователи</a>
-        <a href="{{url_for('products_page')}}">Товары</a>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('index')}}">Замовлення</a>
+        <a href="{{url_for('vendors_page')}}">Постачальники</a>
+        <a href="{{url_for('facilities_page')}}">Заклади</a>
+        <a href="{{url_for('users_page')}}">Користувачі</a>
+        <a href="{{url_for('products_page')}}">Товари</a>
+        <a href="{{url_for('units_page')}}"></a>
         <a href="{{url_for('stats_page')}}">Статистика</a>
-        <a href="{{url_for('noti_page')}}">Оповещения</a>
-        <a href="{{url_for('order_format')}}">Формат заказа</a>
-        <a href="{{url_for('login')}}">Сменить аккаунт</a>
+        <a href="{{url_for('noti_page')}}">Сповіщення</a>
+        <a href="{{url_for('order_format')}}">Формат замовлення</a>
+        <a href="{{url_for('login')}}">Змінити аккаунт</a>
     </div>
 </nav>
 
