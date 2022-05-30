@@ -12,15 +12,15 @@
 </head>
 <body>
 <main>
-    <h1>Поставщики</h1>
+    <h1>Постачальники</h1>
     <div id="vendors">
         <form id="vendors_form" action="" method="post">
             {%for vendor in vendors%}
             <div class="db_el">
 
-                <input type="text" name="{{vendor.id}}:name" placeholder="Название" value="{{vendor.name}}">
-                <input type="text" name="{{vendor.id}}:tg_id" placeholder="ID чата" value="{{vendor.tg_id}}">
-                <button type="button" class="fell_btn" onclick="fell(this)">Расписание</button>
+                <input type="text" name="{{vendor.id}}:name" placeholder="Назва" value="{{vendor.name}}">
+                <input type="text" name="{{vendor.id}}:tg_id" placeholder="ID чату" value="{{vendor.tg_id}}">
+                <button type="button" class="fell_btn" onclick="fell(this)">Розклад</button>
                 <div class="fell_div fell_hidden">
                     {%for i in range(days|length)%}
                     {%if i in vendor.get_sch()%}
@@ -33,7 +33,7 @@
                 </div>
                 <span class="cb_span">
                     <input class="norm" type="checkbox" id="{{vendor.id}}:delete" name="{{vendor.id}}:delete">
-                    <label class="norm" for="{{vendor.id}}:delete">Удалить</label>
+                    <label class="norm" for="{{vendor.id}}:delete">Видалити</label>
                 </span>
                 <br>
 
@@ -48,7 +48,7 @@
                         {{product.name}}
                     </span>
                         {%endfor%}
-                        <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                        <input class="live_search" type="text" value="" placeholder="Додати товар" autocomplete="off"
                         onkeyup="live_search({{vendor.id}}, this, event)"><br>
                         <div class="advice_wrapper"></div>
                     </div>
@@ -64,7 +64,7 @@
                         {%endfor%}
 
                         <select onchange="addElement(this, 'facility')">
-                            <option value="placeholder">Новое заведение</option>
+                            <option value="placeholder">Новий заклад</option>
                             {%for facility in facilities%}
                             {%if facility not in vendor.facilities%}
                             <option value={{facility.id}}>{{facility.name}}</option>
@@ -82,15 +82,15 @@
 
             </div>
 
-            <input class="micro_btn right" type="submit" value="Сохранить">
+            <input class="micro_btn right" type="submit" value="Зберегти">
         </form>
-        <button class="micro_btn" id="new_el_button">Новый поставщик</button>
+        <button class="micro_btn" id="new_el_button">Новий постачальник</button>
 
 
         <div class="template">
-            <input type="text" name="NEW:name" placeholder="Название">
-            <input type="text" name="NEW:tg_id" placeholder="ID чата">
-            <button type="button" class="fell_btn" onclick="fell(this)">Расписание</button>
+            <input type="text" name="NEW:name" placeholder="Назва">
+            <input type="text" name="NEW:tg_id" placeholder="ID чату">
+            <button type="button" class="fell_btn" onclick="fell(this)">Розклад</button>
             <div class="fell_div fell_hidden">
                 {%for i in range(days|length)%}
                 <input type="checkbox" id="NEW:schedule{{i}}" name="NEW:schedule{{i}}">
@@ -105,7 +105,7 @@
                 <input class="hidden product" type="text" name="NEW:products_ids"
                        value="">
                 <div class="multi_box">
-                    <input type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                    <input type="text" value="" placeholder="Додати товар" autocomplete="off"
                         onkeyup="live_search(0, this, event)"><br>
                     <div class="advice_wrapper"></div>
 
@@ -116,7 +116,7 @@
                        value="">
                 <div class="multi_box right">
                     <select onchange="addElement(this, 'facility')">
-                        <option value="placeholder">Новое заведение</option>
+                        <option value="placeholder">Новий заклад</option>
                         {%for facility in facilities%}
                         <option value={{facility.id}}>{{facility.name}}</option>
                         {%endfor%}
@@ -135,16 +135,16 @@
 <nav>
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
-        <a href="{{url_for('index')}}">Заказы</a>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a>
-        <a href="{{url_for('facilities_page')}}">Заведения</a>
-        <a href="{{url_for('users_page')}}">Пользователи</a>
-        <a href="{{url_for('products_page')}}">Товары</a>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('index')}}">Замовлення</a>
+        <a href="{{url_for('vendors_page')}}">Постачальники</a>
+        <a href="{{url_for('facilities_page')}}">Заклади</a>
+        <a href="{{url_for('users_page')}}">Користувачі</a>
+        <a href="{{url_for('products_page')}}">Товари</a>
+        <a href="{{url_for('units_page')}}">Одиниці виміру</a>
         <a href="{{url_for('stats_page')}}">Статистика</a>
-        <a href="{{url_for('noti_page')}}">Оповещения</a>
-        <a href="{{url_for('order_format')}}">Формат заказа</a>
-        <a href="{{url_for('login')}}">Сменить аккаунт</a>
+        <a href="{{url_for('noti_page')}}">Сповіщення</a>
+        <a href="{{url_for('order_format')}}">Формат замовлення</a>
+        <a href="{{url_for('login')}}">Змінити аккаунт</a>
     </div>
 </nav>
 
