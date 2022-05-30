@@ -34,8 +34,11 @@ def access_log(f):
         start = time.perf_counter()
         r = f(*args, **kwargs)
         fin = time.perf_counter()
-        with open(LOGS_PATH, "a") as file:
-            file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - {f.__name__}, time: {fin-start:0.4f}\n")
+        try:
+            with open(LOGS_PATH, "a") as file:
+                file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - {f.__name__}, time: {fin-start:0.4f}\n")
+        except Exception:
+            pass
         return r
     return wrap
 
