@@ -11,18 +11,18 @@
 </head>
 <body>
 <main>
-    <h1>Единицы измерения</h1>
+    <h1>Од. виміру</h1>
     <div id="units">
         <form id="user_form" action="" method="post">
             {%for unit in units%}
             <div class="db_el">
-                <input class="long" type="text" name="{{unit.id}}:name" placeholder="Название" value="{{unit.name}}">
-                <input type="text" name="{{unit.id}}:designation" placeholder="Единицы"
+                <input class="long" type="text" name="{{unit.id}}:name" placeholder="Назва" value="{{unit.name}}">
+                <input type="text" name="{{unit.id}}:designation" placeholder="Одиниці"
                        value="{{unit.designation}}">
 
                 <span class="cb_span">
                 <input class="right norm" type="checkbox" id="{{unit.id}}:delete" name="{{unit.id}}:delete">
-                <label class="right norm" for="{{unit.id}}:delete">Удалить</label>
+                <label class="right norm" for="{{unit.id}}:delete">Видалити</label>
                 </span>
             </div>
 
@@ -39,12 +39,12 @@
                 {% endwith %}
             </p>
 
-            <input class="micro_btn right" type="submit" value="Сохранить">
+            <input class="micro_btn right" type="submit" value="Зберегти">
         </form>
-        <button class="micro_btn" id="new_el_button">Новая единица измерения</button>
+        <button class="micro_btn" id="new_el_button">Нова одиниця виміру</button>
         <div class="template">
-            <input class="long" type="text" name="NEW:name" placeholder="Название">
-            <input type="text" name="NEW:designation" placeholder="Единицы">
+            <input class="long" type="text" name="NEW:name" placeholder="Назва">
+            <input type="text" name="NEW:designation" placeholder="Одиниця">
         </div>
     </div>
 </main>
@@ -52,16 +52,16 @@
 <nav>
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
-        <a href="{{url_for('index')}}">Заказы</a>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a>
-        <a href="{{url_for('facilities_page')}}">Заведения</a>
-        <a href="{{url_for('users_page')}}">Пользователи</a>
-        <a href="{{url_for('products_page')}}">Товары</a>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('index')}}">Замовлення</a>
+        <a href="{{url_for('vendors_page')}}">Постачальники</a>
+        <a href="{{url_for('facilities_page')}}">Заклади</a>
+        <a href="{{url_for('users_page')}}">Користувачі</a>
+        <a href="{{url_for('products_page')}}">Товари</a>
+        <a href="{{url_for('units_page')}}">Одиниці виміру</a>
         <a href="{{url_for('stats_page')}}">Статистика</a>
-        <a href="{{url_for('noti_page')}}">Оповещения</a>
-        <a href="{{url_for('order_format')}}">Формат заказа</a>
-        <a href="{{url_for('login')}}">Сменить аккаунт</a>
+        <a href="{{url_for('noti_page')}}">Сповіщення</a>
+        <a href="{{url_for('order_format')}}">Формат замовлення</a>
+        <a href="{{url_for('login')}}">Змінити аккаунт</a>
     </div>
 </nav>
 
