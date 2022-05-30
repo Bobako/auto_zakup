@@ -4,4 +4,4 @@
 <br>
 {%for product in order.products %}{% if product.amount %}{%if vendor.id == product.vendor_id%}{{product.product.name}}: {{product.amount}} {{product.unit.designation}} {% if not product.official %}(не офиційно){% endif %}<br>
 {%endif%}{%endif%}{%endfor%}<br>
-Дякую!
+Дякую!!
