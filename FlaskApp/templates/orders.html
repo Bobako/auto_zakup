@@ -14,14 +14,14 @@
 <main>
 
     <div class="orders_cat">
-        <h1>Создать заказ</h1>
+        <h1>Створити замовлення</h1>
         <div class="db_el paddles">
             <form id="new_order_form" action="" method="post">
                 <div class="order_header">
-                    Новый заказ для
+                    Нове замовлення для
                     <select id="new_order_facility" name="order:facility_id"
                             onchange="get_available_products(this)">
-                        <option value="placeholder">Выбрать заведение</option>
+                        <option value="placeholder">Вибрати заклад</option>
                         {%for facility in facilities%}
                         {%if facility in user.facilities or user.is_admin %}
                         <option value="{{facility.id}}">{{facility.name}}</option>
@@ -29,7 +29,7 @@
                         {%endfor%}
                     </select>
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail1')">Показать товары</button>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail1')">Показати товари</button>
                 <div hidden id = "detail1">
 
                     <div id="new_order_placeholder">
@@ -37,9 +37,9 @@
                     </div>
                 </div>
                 {%if user.is_admin%}
-                <input class="micro_btn right" type="submit" name="order:new" value="Подтвердить">
+                <input class="micro_btn right" type="submit" name="order:new" value="Підтвердити">
                 {%else%}
-                <input class="micro_btn right" type="submit" name="order:new" value="Отправить на рассмотрение">
+                <input class="micro_btn right" type="submit" name="order:new" value="Відправити на розгляд заявку">
                 {%endif%}
             </form>
         </div>
@@ -48,10 +48,10 @@
 
 
     <div class="orders_cat">
-        <h1>Новые заказы и дозаказы</h1>
-        <h3>Сортировать по заведениям:
+        <h1>Нові замовлення і дозамовлення</h1>
+        <h3>Сортувати по закладам:
                 <select onchange="selectFacility(this)">
-                    <option value=0>Все заведения</option>
+                    <option value=0>Всі заклади</option>
                     {%for facility in user.facilities%}
                     {%if facility.id == facility_id%}
                     <option selected value="{{facility.id}}">{{facility.name}}</option>
@@ -68,22 +68,22 @@
             <form action="" method="post">
                 <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
                 <div class="order_header">
-                    Заказ #{{order.id}} для {{order.facility.name}}
+                    Замовлення #{{order.id}} для {{order.facility.name}}
                     <span class="right">
-                        {% if order.status == "NEW" %} Новый {% endif %}
-                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
-                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                        {% if order.status == "NEW" %} Новий {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозамовлення {% endif %}
+                        {% if order.status == "ORDERED" %} Замовлено {% endif %}
                     </span>
                     <br>
-                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    Автор: {{order.user.name}} {{order.user.surname}}, остання зміна {{order.create_date.strftime('%d.%m %H:%M')}}
                     {% if order.sent_date %}
                     <span class="right">
-                        Отправлен {{order.sent_date.strftime('%d.%m %H:%M')}}
+                        Відправлено {{order.sent_date.strftime('%d.%m %H:%M')}}
                     </span>
                     {% endif %}
 
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail2')">Показать товары</button>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail2')">Показати товари</button>
                 <div hidden id = "detail2">
                     <div class="products">
                 {%for product in order.products%}
@@ -100,7 +100,7 @@
                 <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
                 <input class=" col3" type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
-                       placeholder="Количество"
+                       placeholder="Кількість"
                        onchange="checkAmount(this)">
 
                 <select class="col4"  name = "{{product.id}}:unit_id">
@@ -112,7 +112,7 @@
                     {% endfor %}
                 </select>
                 <input type="checkbox" {% if not product.product.alco%} hidden {% endif %} {% if product.official %} checked {% endif %} name = "{{product.id}}:official">
-                <label {% if not product.product.alco%} hidden {% endif %} > Офиц.</label>
+                <label {% if not product.product.alco%} hidden {% endif %} > Офіц.</label>
                 <br>
                 {%else%}
                 <select hidden class="col1 pid{{product.id}} space" name="{{product.id}}:vendor_id">
@@ -127,7 +127,7 @@
                 <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
                 <input class="col3 pid{{product.id}} space" hidden type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
-                       placeholder="Количество"
+                       placeholder="Кількість"
                        onchange="checkAmount(this)">
 
                 <select class="col4 pid{{product.id}} space" hidden  name = "{{product.id}}:unit_id">
@@ -140,25 +140,25 @@
                 </select>
 
                 <input hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} type="checkbox" name = "{{product.id}}:official" {%if product.official %} checked {% endif %}>
-                <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офиц.</label>
+                <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офіц.</label>
 
                 {%endif%}
                 {%endfor%}
                 </div>
                 </div>
-                <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                <input class="live_search" type="text" value="" placeholder="Добавити товар" autocomplete="off"
                         onkeyup="live_search({{order.id}}, this, event)"><br>
                 <div class="advice_wrapper"></div>
                 <br>
                 {%if user.is_admin%}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
-                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Подтвердить">
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Підтвердити">
                 {%else%}
                 {%if order.status != "ORDERED" %}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
                 {%endif%}
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}"
-                       value="Изменить">
+                       value="Змінити">
                 {%endif%}
 
             </form>
@@ -170,31 +170,31 @@
 
 
     <div class="orders_cat">
-        <h1>Уже заказано</h1>
+        <h1>Уже замовлено</h1>
         {%for order in old_orders%}
         {%if (order.facility_id == facility_id) or facility_id==0%}
         <div class="db_el paddles">
 <form action="" method="post">
                 <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
                 <div class="order_header">
-                    Заказ #{{order.id}} для {{order.facility.name}}
+                    Замовлення #{{order.id}} для {{order.facility.name}}
 
                     <span class="right">
-                        {% if order.status == "NEW" %} Новый {% endif %}
-                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
-                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                        {% if order.status == "NEW" %} Новий {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозамовлення {% endif %}
+                        {% if order.status == "ORDERED" %} Замовлено {% endif %}
                     </span>
                     <br>
-                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    Автор: {{order.user.name}} {{order.user.surname}}, остання зміна {{order.create_date.strftime('%d.%m %H:%M')}}
                     {% if order.sent_date %}
                     <span class="right">
-                        Отправлен {{order.sent_date.strftime('%d.%m %H:%M')}}
+                        Відправлено {{order.sent_date.strftime('%d.%m %H:%M')}}
                     </span>
                     {% endif %}
 
 
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail3')">Показать товары</button>
+                <button type="button" class="summary" onclick="toggleDetails(this, 'detail3')">Показати товари</button>
                 <div hidden id = "detail3">
                     <div class="products">
                 {%for product in order.products%}
@@ -210,7 +210,7 @@
                 </select>
                     <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
                     <input class=" col3" type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
-                           placeholder="Количество"
+                           placeholder="Кількість"
                            onchange="checkAmount(this)">
                     <select class="col4"  name = "{{product.id}}:unit_id">
                         <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
@@ -222,7 +222,7 @@
                     </select>
 
                         <input type="checkbox" name = "{{product.id}}:official" {% if not product.product.alco%} hidden {% endif %} {%if product.official %} checked {% endif %}>
-                        <label {% if not product.product.alco%} hidden {% endif %} > Офиц.</label>
+                        <label {% if not product.product.alco%} hidden {% endif %} > Офіц.</label>
 
                     <br>
 
@@ -239,7 +239,7 @@
                 </select>
                     <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
                     <input class="col3 pid{{product.id}} space" hidden type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"
-                           placeholder="Количество"
+                           placeholder="Кількість"
                            onchange="checkAmount(this)">
                     <select class="col4 pid{{product.id}} space" hidden name = "{{product.id}}:unit_id">
                         <option selected value="{{product.unit_id}}">{{product.unit.designation}}</option>
@@ -251,7 +251,7 @@
                     </select>
 
                     <input hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} type="checkbox" name = "{{product.id}}:official" {%if product.official %} checked {% endif %}>
-                    <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офиц.</label>
+                    <label hidden {% if product.product.alco%} class = "pid{{product.id}}" {% endif %} > Офіц.</label>
 
 
                 {%endif%}
@@ -259,20 +259,20 @@
                 {%endfor%}
                 </div>
                 </div>
-                <input class="live_search" type="text" value="" placeholder="Добавить товар" autocomplete="off"
+                <input class="live_search" type="text" value="" placeholder="Добавити товар" autocomplete="off"
                         onkeyup="live_search({{order.id}}, this, event)"><br>
                 <div class="advice_wrapper"></div>
                 <br>
 
                 {%if user.is_admin%}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
-                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Подтвердить">
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Підтвердити">
                 {%else%}
                 {%if order.status != "ORDERED" %}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Удалить">
+                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
                 {%endif%}
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}"
-                       value="Изменить">
+                       value="Змінити">
                 {%endif%}
 
             </form>
@@ -283,23 +283,23 @@
     <br>
 
     <div class="orders_cat">
-        <h1>Удаленные заказы</h1>
+        <h1>Видалені замовлення</h1>
         {%for order in deleted_orders%}
         {%if (order.facility_id == facility_id) or facility_id==0%}
         <div class="db_el paddles">
 <form action="" method="post">
                 <input type="text" class="hidden" name="order:facility_id" value="{{order.facility_id}}">
                 <div class="order_header">
-                    Заказ #{{order.id}} для {{order.facility.name}}
+                    Замовлення #{{order.id}} для {{order.facility.name}}
 
                     <span class="right">
-                        {% if order.status == "NEW" %} Новый {% endif %}
-                        {% if order.status == "ADDITIONAL" %} Дозаказ {% endif %}
-                        {% if order.status == "ORDERED" %} Заказан {% endif %}
+                        {% if order.status == "NEW" %} Новий {% endif %}
+                        {% if order.status == "ADDITIONAL" %} Дозамовлення {% endif %}
+                        {% if order.status == "ORDERED" %} Замовлено {% endif %}
                     </span>
 
                     <br>
-                    Автор: {{order.user.name}} {{order.user.surname}}, последнее изменение {{order.create_date.strftime('%d.%m %H:%M')}}
+                    Автор: {{order.user.name}} {{order.user.surname}}, остання зміна {{order.create_date.strftime('%d.%m %H:%M')}}
                     {% if order.status != "NEW" %}
                     <span class="right">
                         Удален {{order.delete_date.strftime('%d.%m %H:%M')}}
@@ -307,36 +307,36 @@
                     {% endif %}
 
                 </div>
-                <button  type="button" class="summary" onclick="toggleDetails(this, 'detail4')">Показать товары</button>
+                <button  type="button" class="summary" onclick="toggleDetails(this, 'detail4')">Показати товари</button>
                 <div hidden id = "detail4">
                     <div class="products">
                 {%for product in order.products%}
 
                 {%if product.amount %}
                     <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                           placeholder="Поставщик">
+                           placeholder="Постачальник">
                     <input class=" col1" type="text" disabled name="{{product.id}}:vendor_id"
                            value="{{product.vendor.name}}"
-                           placeholder="Поставщик">
+                           placeholder="Постачальник">
                     <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
                     <input class=" col3" type="number" step="any" disabled name="{{product.id}}:amount" value="{{product.amount}}"
-                           placeholder="Количество"
+                           placeholder="Кількість"
                            onchange="checkAmount(this)">
                     <input class=" col4" type="text" disabled value="{{product.unit.designation if product.unit else ''}}"
-                           placeholder="Ед">
+                           placeholder="Од. виміру">
                     <br>
                 {%else%}
                     <input type="text" hidden name="{{product.id}}:vendor_id" value="{{product.vendor_id}}"
-                           placeholder="Поставщик">
+                           placeholder="Постачальник">
                     <input class="col1 pid{{product.id}} space" hidden type="text" disabled name="{{product.id}}:vendor_id"
                            value="{{product.vendor.name}}"
-                           placeholder="Поставщик">
+                           placeholder="Постачальник">
                     <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
                     <input class="col3 pid{{product.id}} space" hidden type="number" step="any" disabled name="{{product.id}}:amount" value="{{product.amount}}"
-                           placeholder="Количество"
+                           placeholder="Кількість"
                            onchange="checkAmount(this)">
                     <input class="col4 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.unit.designation if product.product.unit else ''}}"
-                           placeholder="Ед">
+                           placeholder="Од. виміру">
                     <br class="pid{{product.id}}" hidden>
                 {%endif%}
 
@@ -345,7 +345,7 @@
                 </div>
                     <br>
 
-                <input class = "micro_btn" type ="submit" name ="order:{{order.id}}" value="Восстановить">
+                <input class = "micro_btn" type ="submit" name ="order:{{order.id}}" value="Відновити">
 
             </form>
         </div>
@@ -362,17 +362,17 @@
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
         {%if user.is_admin%}
-        <a href="{{url_for('index')}}">Заказы</a>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a>
-        <a href="{{url_for('facilities_page')}}">Заведения</a>
-        <a href="{{url_for('users_page')}}">Пользователи</a>
-        <a href="{{url_for('products_page')}}">Товары</a>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('index')}}">Замовлення</a>
+        <a href="{{url_for('vendors_page')}}">Постачальники</a>
+        <a href="{{url_for('facilities_page')}}">Заклади</a>
+        <a href="{{url_for('users_page')}}">Користувачі</a>
+        <a href="{{url_for('products_page')}}">Товари</a>
+        <a href="{{url_for('units_page')}}">Од. виміру</a>
         <a href="{{url_for('stats_page')}}">Статистика</a>
-        <a href="{{url_for('noti_page')}}">Оповещения</a>
-        <a href="{{url_for('order_format')}}">Формат заказа</a>
+        <a href="{{url_for('noti_page')}}">Сповіщення</a>
+        <a href="{{url_for('order_format')}}">Формат замовлення</a>
         {%endif%}
-        <a href="{{url_for('login')}}">Сменить аккаунт</a>
+        <a href="{{url_for('login')}}">Змінити аккаунт</a>
     </div>
 </nav>
 
