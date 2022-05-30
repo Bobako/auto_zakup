@@ -1,8 +1,8 @@
 {%for vendor in vendors%}
 {%for product in vendor.products%}
 
-<input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Поставщик">
-<input class="col1" type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Поставщик">
+<input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Постачальник">
+<input class="col1" type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Постачальник">
 
 <input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
 <input class="col2" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
@@ -18,7 +18,7 @@
     {% endfor %}
 </select>
 <input type="checkbox"  checked name = "NEW:official" {% if not product.alco%} hidden {% endif %}>
-<label {% if not product.alco%} hidden {% endif %}> Офиц.</label>
+<label {% if not product.alco%} hidden {% endif %}> Офіц.</label>
 <br>
 {%endfor%}
 {%endfor%}
