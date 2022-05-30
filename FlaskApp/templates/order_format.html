@@ -8,23 +8,23 @@
     <script src="{{url_for('static', filename='new_el_button.js')}}"></script>
     <script src="{{url_for('static', filename='antidpr.js')}}"></script>
 
-    <title>Order format</title>
+    <title>Формат замовлення</title>
 </head>
 <body>
 <main>
-    <h1>Формат заказа для отправки поставщику</h1>
+    <h1>Формат замовлення для відправки постачальнику</h1>
     <p class=desc>
-        Заказ будет отформатирован в соотвествии с этой формой. <br>
-        Служебные поля, обернутые в двойные фигурные скобки будут заменены на соответствующие значения из БД.<br>
-        Фигурные скобки с символом процента - цикл, выполняющий перебор всех товаров в заказе.<br>
-        Описание некоторых служебных полей:<br>
-        order.id - ID заказа<br>
-        order.facility.name - название заведения для которого предназначен заказ<br>
-        order.facility.address - адрес заведения<br>
-        product.product.name - имя товара<br>
-        product.amount - количество товара<br>
-        product.unit.designation - условное обозначения единицы измерения<br>
-        Менять с осторожностью.<br>
+        Замовлення буде відформатовано по цій формі <br>
+        Службові поля, обгорнуті в подвійні фігурні скобки будуть замінені на значення з БД<br>
+        Фігурні скобки з символом відсотку - цикл, який перебирає всі товари в замовленні<br>
+        Опис службових полів:<br>
+        order.id - ID замовлення<br>
+        order.facility.name - назва закладу для якого виконується замовлення<br>
+        order.facility.address - адреса закладу<br>
+        product.product.name - назва товару<br>
+        product.amount - к-сть товару<br>
+        product.unit.designation - умовне позначення од. виміру<br>
+        Змінювати з обережністю<br>
 
     </p>
     <div class=db_el>
@@ -33,8 +33,8 @@
             <p>
             <textarea name="msg">{{ msg }}</textarea>
             </p>
-            <input class="micro_btn" type="submit" name="default" value="Сбросить">
-            <input class="micro_btn right" type="submit" name="confirm" value="Сохранить">
+            <input class="micro_btn" type="submit" name="default" value="Скинути">
+            <input class="micro_btn right" type="submit" name="confirm" value="Зберегти">
         </form>
 
     </div>
@@ -43,16 +43,16 @@
 <nav>
     <button class="nav_button hiden_nav_button"></button>
     <div class="hidden_nav_div">
-        <a href="{{url_for('index')}}">Заказы</a>
-        <a href="{{url_for('vendors_page')}}">Поставщики</a>
-        <a href="{{url_for('facilities_page')}}">Заведения</a>
-        <a href="{{url_for('users_page')}}">Пользователи</a>
-        <a href="{{url_for('products_page')}}">Товары</a>
-        <a href="{{url_for('units_page')}}">Единицы измерения</a>
+        <a href="{{url_for('index')}}">Замовлення</a>
+        <a href="{{url_for('vendors_page')}}">Постачальники</a>
+        <a href="{{url_for('facilities_page')}}">Заклади</a>
+        <a href="{{url_for('users_page')}}">Користувачі</a>
+        <a href="{{url_for('products_page')}}">Товари</a>
+        <a href="{{url_for('units_page')}}">Од. виміру</a>
         <a href="{{url_for('stats_page')}}">Статистика</a>
-        <a href="{{url_for('noti_page')}}">Оповещения</a>
-        <a href="{{url_for('order_format')}}">Формат заказа</a>
-        <a href="{{url_for('login')}}">Сменить аккаунт</a>
+        <a href="{{url_for('noti_page')}}">Сповіщення</a>
+        <a href="{{url_for('order_format')}}">Формат замовлення</a>
+        <a href="{{url_for('login')}}">Змінити аккаунт</a>
     </div>
 </nav>
 
