@@ -2,15 +2,15 @@ prod = True
 
 BOT_TOKEN = "2104797267:AAFp-FX16r1-nogBbN26Zztk9mGGOGLUoP4"
 
-DEFAULT_ORDER_FORMAT = """Добрый день<br>
+DEFAULT_ORDER_FORMAT = """Добрий день<br>
 <br>
-Заказ #{{order.id}} для {{order.facility.name}} ({{order.facility.address}})<br>
+Замовлення #{{order.id}} для {{order.facility.name}} ({{order.facility.address}})<br>
 <br>
 {%for product in order.products %}{% if product.amount %}{%if vendor.id == product.vendor_id%}
 {{product.product.name}}: {{product.amount}} {{product.unit.designation}} {% if not product.official %}(не официально){% endif %}<br>
 {%endif%}{%endif%}{%endfor%}
 <br>
-Спасибо"""
+Дякую"""
 
 
 if prod:
