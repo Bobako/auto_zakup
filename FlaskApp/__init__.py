@@ -326,8 +326,10 @@ def vendors_page():
                 update_orders(id_, vendor["products"], vendor["facilities"], True)
                 update_objs(one_vendor, Vendor)
             else:
-                vendor_id = update_objs(one_vendor, Vendor)[0]
-                update_orders(vendor_id, vendor["products"], vendor["facilities"])
+                vendor_id = update_objs(one_vendor, Vendor)
+                if vendor_id:
+                    vendor_id = vendor_id[0]
+                    update_orders(vendor_id, vendor["products"], vendor["facilities"])
     fin = time.perf_counter()
     with open(LOGS_PATH, "a") as file:
         file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - vendors without rendering, time: {fin - start:0.4f}\n")
