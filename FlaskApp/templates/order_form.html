@@ -7,7 +7,7 @@
 <input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
 <input class="col2" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
 
-<input class="col3" type="number" step="any" name="NEW:amount" value="0" placeholder="Количество" onchange="checkAmount(this)">
+<input class="col3" type="number" step="any" name="NEW:amount" value="0" placeholder="Кількість" onchange="checkAmount(this)">
 
 <select name = "NEW:unit_id">
     <option selected value="{{product.unit_id}}">{% if product.unit_id %} {{product.unit.designation}} {% endif %}</option>
