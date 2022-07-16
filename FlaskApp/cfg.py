@@ -1,4 +1,4 @@
-prod = True
+prod = False
 
 BOT_TOKEN = "2104797267:AAFp-FX16r1-nogBbN26Zztk9mGGOGLUoP4"
 
