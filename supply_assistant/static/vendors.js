@@ -62,7 +62,7 @@ function live_search(vid, field, e){
     }
     let wrapper = $(field).parent().find('.advice_wrapper');
     var req = new XMLHttpRequest();
-    req.open("GET", "/api/search?s=" + $(field).val(), false);
+    req.open("GET", "api/search?s=" + $(field).val(), false);
     req.send(null);
 
     $(wrapper).empty();

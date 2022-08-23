@@ -11,7 +11,7 @@ $(document).ready(function () {
 function set_msg(oid, msg){
     var vid = msg.id;
     var req = new XMLHttpRequest();
-    req.open("GET", "/api/formatted_order?oid=" + String(oid) + "&vid=" + String(vid), false);
+    req.open("GET", "api/formatted_order?oid=" + String(oid) + "&vid=" + String(vid), false);
     req.send(null);
     msg.append(req.responseText);
 }

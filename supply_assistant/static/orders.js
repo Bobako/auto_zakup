@@ -28,7 +28,7 @@ function get_available_products(selector) {
 
 
     var req = new XMLHttpRequest();
-    req.open("GET", "/api/available_products?id=" + String(fac_id), false);
+    req.open("GET", "api/available_products?id=" + String(fac_id), false);
     req.send(null);
     $("#new_order_placeholder").empty();
     $("#new_order_placeholder").append(req.responseText);
@@ -95,7 +95,7 @@ function live_search(oid, field, e){
     }
     let wrapper = $(field).parent().find('.advice_wrapper');
     var req = new XMLHttpRequest();
-    req.open("GET", "/api/order_search?oid="+String(oid) +"&s=" + $(field).val(), false);
+    req.open("GET", "api/order_search?oid="+String(oid) +"&s=" + $(field).val(), false);
     req.send(null);
 
     $(wrapper).empty();
