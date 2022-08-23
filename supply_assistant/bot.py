@@ -1,11 +1,10 @@
 from threading import Thread
-import sys
 from telebot import TeleBot
 
-from FlaskApp.cfg import *
-from FlaskApp.db_handler import Noti
+from supply_assistant.cfg import config
+from supply_assistant.models import Noti
 
-bot = TeleBot(BOT_TOKEN)
+bot = TeleBot(config["BOT"]["token"])
 
 
 @bot.message_handler(commands=["id"])

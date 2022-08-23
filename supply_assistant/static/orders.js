@@ -74,11 +74,11 @@ function addProduct(button, pid){
 }
 
 function details(summary){
-    if (summary.innerHTML == "Показать товары"){
-        $(summary).html("Скрыть товары");
+    if (summary.innerHTML == "Показати товари"){
+        $(summary).html("Скрыть товари");
     }
     else{
-        $(summary).html("Показать товары");
+        $(summary).html("Показати товари");
     }
 
 }
@@ -103,12 +103,12 @@ function live_search(oid, field, e){
 }
 
 function toggleDetails(button, did){
-    if (button.innerHTML == "Показать товары"){
-        $(button).html("Скрыть товары");
+    if (button.innerHTML == "Показати товари"){
+        $(button).html("Скрыть товари");
         $("#"+did).removeAttr("hidden");
     }
     else{
-        $(button).html("Показать товары");
+        $(button).html("Показати товари");
         $("#"+did).attr("hidden", "");
     }
 }

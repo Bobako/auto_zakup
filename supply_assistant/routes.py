@@ -1,66 +1,31 @@
-import copy
 import datetime
 import os
 import sys
-import time
 import traceback
-from functools import wraps
 
-from flask import Flask, render_template, request, flash, redirect, url_for
-from sqlalchemy import exc, desc, asc
-from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 import openpyxl
+from flask import render_template, request, flash, redirect, url_for
+from flask_login import login_user, login_required, current_user, logout_user
 from fuzzywuzzy import process
+from sqlalchemy import exc
 
-from FlaskApp.db_handler import *
-from FlaskApp.bot import Bot
-from FlaskApp.cfg import *
+from supply_assistant import bot
+from supply_assistant import login_manager, db, app
+from supply_assistant.cfg import config
+from supply_assistant.models import User, Facility, Unit, Product, OrderedProduct, Order, Noti, MSGFormat, Vendor
+from supply_assistant.forms_handler import parse_forms, update_objs
 
-
-
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD
-db = Handler()
-login_manager = LoginManager()
-login_manager.init_app(app)
-bot = Bot(db.session)
-
-DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
-
-
-def access_log(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        start = time.perf_counter()
-        r = f(*args, **kwargs)
-        fin = time.perf_counter()
-        try:
-            with open(LOGS_PATH, "a") as file:
-                file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - {f.__name__}, time: {fin-start:0.4f}\n")
-        except Exception:
-            pass
-        return r
-    return wrap
 
 @login_manager.unauthorized_handler
 def unauthorized():
     return redirect(url_for("login") + f"?next={request.url}")
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        user = db.session.query(User).filter(User.id == user_id).one()
-        return user
-    except exc.NoResultFound:
-        return None
-
-
 @app.route("/login", methods=['post', 'get'])
-@access_log
 def login():
     if current_user:
-        db_logout(current_user)
+        logout_user()
+        db.session.commit()
     if request.method == "POST":
         code = request.form.get("code")
         try:
@@ -68,19 +33,18 @@ def login():
         except exc.NoResultFound:
             flash("Некорректный код")
         else:
-            db_login(user)
+            login_user(user)
+            user.is_authenticated = True
+            db.session.commit()
             next_page = request.args.get('next')
             if not next_page:
                 next_page = url_for('index')
             return redirect(next_page)
-
     return render_template("login.html")
-
 
 
 @app.route("/users", methods=['post', 'get'])
 @login_required
-@access_log
 def users_page():
     user = current_user
     if not user.is_admin:
@@ -114,14 +78,13 @@ def users_page():
                 for facility in facilities:
                     user.pop(f"fid_{facility.id}")
 
-            update_objs(users, User)
+            update_objs(db.session, users, User)
     return render_template("users.html", users=db.session.query(User).all(),
                            facilities=db.session.query(Facility).all())
 
 
 @app.route("/facilities", methods=['post', 'get'])
 @login_required
-@access_log
 def facilities_page():
     user = current_user
     if not user.is_admin:
@@ -138,13 +101,12 @@ def facilities_page():
             else:
                 names.append(facility["name"])
         if correct:
-            update_objs(facilities, Facility)
+            update_objs(db.session, facilities, Facility)
     return render_template("facilities.html", facilities=db.session.query(Facility).all())
 
 
 @app.route("/units", methods=['post', 'get'])
 @login_required
-@access_log
 def units_page():
     user = current_user
     if not user.is_admin:
@@ -162,13 +124,12 @@ def units_page():
             else:
                 deses.append(unit["designation"])
         if correct:
-            update_objs(units, Unit)
+            update_objs(db.session, units, Unit)
     return render_template("units.html", units=db.session.query(Unit).all())
 
 
 @app.route("/products", methods=['post', 'get'])
 @login_required
-@access_log
 def products_page():
     user = current_user
     if not user.is_admin:
@@ -187,13 +148,14 @@ def products_page():
         for strange_ in strange:
             products.pop(strange_)
 
-        update_objs(products, Product)
+        update_objs(db.session, products, Product)
         file = request.files["products:file"]
         if file:
             filename = "file.xlsx"
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             try:
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                els = parse_file(UPLOAD + "/" + filename)
+                file.save(path)
+                els = parse_file(path)
             except Exception as ex:
                 msg, type_, tb = sys.exc_info()
                 print(f"Error: {msg}, {type_}")
@@ -203,7 +165,7 @@ def products_page():
             else:
                 error = False
             finally:
-                os.remove(UPLOAD + "/" + filename)
+                os.remove(path)
                 return products_import(error, els)
 
     return render_template("products.html", products=db.session.query(Product).order_by(Product.name).all(),
@@ -280,9 +242,7 @@ def parse_file(filename):
 
 @app.route("/vendors", methods=['post', 'get'])
 @login_required
-@access_log
 def vendors_page():
-    start = time.perf_counter()
     user = current_user
     if not user.is_admin:
         return redirect(url_for("index"))
@@ -324,18 +284,16 @@ def vendors_page():
             one_vendor = {id_: vendor}
             if 'delete' in vendor:
                 update_orders(id_, vendor["products"], vendor["facilities"], True)
-                update_objs(one_vendor, Vendor)
+                update_objs(db.session, one_vendor, Vendor)
             else:
-                vendor_id = update_objs(one_vendor, Vendor)
+                vendor_id = update_objs(db.session, one_vendor, Vendor)
                 if vendor_id:
                     vendor_id = vendor_id[0]
                     update_orders(vendor_id, vendor["products"], vendor["facilities"])
-    fin = time.perf_counter()
-    with open(LOGS_PATH, "a") as file:
-        file.write(f"{datetime.datetime.now().strftime('%d.%m %H:%M')} - vendors without rendering, time: {fin - start:0.4f}\n")
     return render_template("vendors.html", vendors=db.session.query(Vendor).all(),
                            facilities=db.session.query(Facility).all(),
-                           products=db.session.query(Product).all(), days=DAYS)
+                           products=db.session.query(Product).all(),
+                           days=["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"])
 
 
 def update_orders(vendor_id, products, facilities, delete=False):
@@ -361,7 +319,6 @@ def update_orders(vendor_id, products, facilities, delete=False):
 
 @app.route("/preview", methods=['post', 'get'])
 @login_required
-@access_log
 def preview():
     user = current_user
     if not user.is_admin:
@@ -402,7 +359,7 @@ def previewable_order(order):
         db.session.commit()
         for product, old_product in zip(order.products, old_order.products):
             new_product = OrderedProduct(product.product_id, product.amount - old_product.amount, product.vendor_id,
-                                         new_order.id)
+                                         new_order.id, product.unit.id, product.official)
             db.session.add(new_product)
         db.session.commit()
         return new_order
@@ -439,20 +396,19 @@ def copy_order(order):
 
 @app.route("/order_format", methods=['post', 'get'])
 @login_required
-@access_log
 def order_format():
     user = current_user
     if not user.is_admin:
         return redirect(url_for("index"))
     if request.method == "POST":
         if request.form.get("default"):
-            msg = DEFAULT_ORDER_FORMAT
+            msg = config["DEFAULT"]["message_format"]
         elif request.form.get("confirm"):
             msg = request.form.get("msg")
         msg = msg.replace("}\n", "}")
         db.session.query(MSGFormat).one().msg = msg
         db.session.commit()
-        with open(FORMAT_PATH, "w", encoding='utf-8') as file:
+        with open(config["SITE"]["message_format_path"], "w", encoding='utf-8') as file:
             file.write(msg)
     msg = db.session.query(MSGFormat).one().msg
     return render_template("order_format.html", msg=msg)
@@ -460,7 +416,6 @@ def order_format():
 
 @app.route("/", methods=['post', 'get'])
 @login_required
-@access_log
 def index():
     user = current_user
     if request.method == 'POST':
@@ -492,7 +447,7 @@ def index():
         else:
             facility_id = 0
     return render_template("orders.html", user=user, orders=orders, old_orders=old_orders,
-                           products=products, days=DAYS,
+                           products=products, days=["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
                            vendors=vendors, facilities=db.session.query(Facility).all(),
                            col1=col1, col2=col2, col3=col3, col4=col4, facility_id=int(facility_id),
                            deleted_orders=get_deleted_orders(user), units=db.session.query(Unit).all())
@@ -500,10 +455,10 @@ def index():
 
 def get_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status != "ORDERED").filter(
+        orders = db.session.query(Order).order_by(Order.create_date.desc()).filter(Order.status != "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     else:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
+        orders = db.session.query(Order).order_by(Order.create_date.desc()).filter(
             Order.facility_id.in_([f.id for f in user.facilities])).filter(Order.status != "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     return orders
@@ -511,10 +466,10 @@ def get_orders(user):
 
 def get_old_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(Order.status == "ORDERED").filter(
+        orders = db.session.query(Order).order_by(Order.create_date.desc()).filter(Order.status == "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     else:
-        orders = db.session.query(Order).order_by(desc(Order.create_date)).filter(
+        orders = db.session.query(Order).order_by(Order.create_date.desc()).filter(
             Order.facility_id.in_([f.id for f in user.facilities])).filter(Order.status == "ORDERED").filter(
             Order.display == True).filter(Order.deleted == False).all()
     return orders
@@ -522,10 +477,10 @@ def get_old_orders(user):
 
 def get_deleted_orders(user):
     if user.is_admin:
-        orders = db.session.query(Order).order_by(desc(Order.delete_date)).filter(
+        orders = db.session.query(Order).order_by(Order.delete_date.desc()).filter(
             Order.display == True).filter(Order.deleted == True).all()
     else:
-        orders = db.session.query(Order).order_by(desc(Order.delete_date)).filter(
+        orders = db.session.query(Order).order_by(Order.delete_date.desc()).filter(
             Order.facility_id.in_([f.id for f in user.facilities])).filter(
             Order.display == True).filter(Order.deleted == True).all()
     for order in orders:
@@ -546,7 +501,7 @@ def create_order(order, user):
     order.pop("order")
     db.session.add(Order(user.id, facility_id))
     db.session.commit()
-    order_id = db.session.query(Order).order_by(desc(Order.id)).first().id
+    order_id = db.session.query(Order).order_by(Order.id.desc()).first().id
     parse_order_products(order, order_id)
     if not user.is_admin:
         bot.noti_admin(
@@ -691,7 +646,6 @@ sf = less
 
 @app.route("/stats", methods=['post', 'get'])
 @login_required
-@access_log
 def stats_page():
     global sf
     if request.method == "POST":
@@ -709,21 +663,14 @@ def stats_page():
                      sum([order.amount for order in orders]),
                      product.unit.designation if product.unit else 'Ед.'])
             else:
-                stats.append([f"{product.name} ({vendor.name})", 0, 0, product.unit.designation if product.unit else 'Ед.'])
+                stats.append(
+                    [f"{product.name} ({vendor.name})", 0, 0, product.unit.designation if product.unit else 'Ед.'])
     return render_template("stats.html",
                            products=merge_sort(stats, sf))
 
 
-@app.route("/logs", methods=['post', 'get'])
-@login_required
-@access_log
-def logs_page():
-    return
-
-
 @app.route("/notifications", methods=['post', 'get'])
 @login_required
-@access_log
 def noti_page():
     if request.method == "POST":
         noti = db.session.query(Noti).one()
@@ -731,71 +678,3 @@ def noti_page():
         noti.send = bool(request.form.get("send"))
         db.session.commit()
     return render_template("noti.html", noti=db.session.query(Noti).one())
-
-
-def db_login(user):
-    login_user(user)
-    user.is_authenticated = True
-    db.session.commit()
-
-
-def db_logout(user):
-    logout_user()
-    db.session.commit()
-
-
-def parse_forms(form, checkboxes=()):
-    result = {}
-
-    for key, val in form.lists():
-        id_, arg = key.split(":")
-        if id_ == "NEW":
-            for i, value in enumerate(val):
-                id_ = "NEW" + str(i)
-                if id_ not in result:
-                    result[id_] = dict()
-                result[id_][arg] = value
-        else:
-            val = val[0]
-            if id_ not in result:
-                result[id_] = dict()
-
-            if val == "on":
-                val = True
-            result[id_][arg] = val
-
-    for res_dict in result.values():
-        for checkbox in checkboxes:
-            if checkbox not in res_dict:
-                res_dict[checkbox] = False
-            else:
-                res_dict[checkbox] = True
-
-    return result
-
-
-def update_objs(dicts, class_, not_nullable="name"):
-    ids = []
-    for id_, dict_ in dicts.items():
-        if "NEW" not in id_:
-            obj = db.session.query(class_).filter(class_.id == id_).one()
-            if "delete" in dict_:
-                db.session.delete(obj)
-                continue
-            for arg_name, value in dict_.items():
-                setattr(obj, arg_name, value)
-            ids.append(obj)
-
-        else:
-            if not dict_[not_nullable]:
-                continue
-
-            obj = class_(**dict_)
-            db.session.add(obj)
-            ids.append(obj)
-    db.session.commit()
-    return [obj.id for obj in ids]
-
-
-if __name__ == '__main__':
-    app.run(debug=False)
