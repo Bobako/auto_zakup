@@ -151,11 +151,11 @@
                 <div class="advice_wrapper"></div>
                 <br>
                 {%if user.is_admin%}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn" type="buttton" name="order:{{order.id}}" value="Видалити">
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Підтвердити">
                 {%else%}
                 {%if order.status != "ORDERED" %}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn" type="buttton" name="order:{{order.id}}" value="Видалити">
                 {%endif%}
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}"
                        value="Змінити">
@@ -265,11 +265,11 @@
                 <br>
 
                 {%if user.is_admin%}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn" type="buttton" name="order:{{order.id}}" value="Видалити">
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}" value="Підтвердити">
                 {%else%}
                 {%if order.status != "ORDERED" %}
-                <input class="micro_btn" type="submit" name="order:{{order.id}}" value="Видалити">
+                <input class="micro_btn" type="buttton" name="order:{{order.id}}" value="Видалити">
                 {%endif%}
                 <input class="micro_btn right" type="submit" name="order:{{order.id}}"
                        value="Змінити">
