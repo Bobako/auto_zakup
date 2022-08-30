@@ -18,12 +18,11 @@ app.wsgi_app = DispatcherMiddleware(
     Response('Not Found', status=404),
     {config['SITE']['base_url']: app.wsgi_app}
 )
-from supply_assistant import models, routes
+from supply_assistant import models
 from supply_assistant.bot import Bot
-from supply_assistant import database_shortcuts
 
 db.create_all()
+notification_bot = Bot(db.session)
+from supply_assistant import database_shortcuts, routes
 
 database_shortcuts.initialize(db.session)
-
-bot = Bot(db.session)

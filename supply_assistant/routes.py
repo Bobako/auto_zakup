@@ -9,7 +9,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 from fuzzywuzzy import process
 from sqlalchemy import exc
 
-from supply_assistant import bot
+from supply_assistant import notification_bot
 from supply_assistant import login_manager, db, app
 from supply_assistant.cfg import config
 from supply_assistant.models import User, Facility, Unit, Product, OrderedProduct, Order, Noti, MSGFormat, Vendor
@@ -375,7 +375,7 @@ def send_order(order, msgs):  # msgs - {vendor.id:msg}
     db.session.commit()
     for vendor_id, msg in msgs.items():
         id_ = db.session.query(Vendor).filter(Vendor.id == vendor_id).one().tg_id
-        bot.noti_vendor(int(id_), msg['msg'])
+        notification_bot.noti_vendor(int(id_), msg['msg'])
 
 
 def copy_order(order):
@@ -504,7 +504,7 @@ def create_order(order, user):
     order_id = db.session.query(Order).order_by(Order.id.desc()).first().id
     parse_order_products(order, order_id)
     if not user.is_admin:
-        bot.noti_admin(
+        notification_bot.noti_admin(
             f"{user.name} {user.surname} {'(' + db.session.query(Facility).filter(Facility.id == facility_id).one().name + ')'} cоздал заказ "
             f"#{order_id}", db.session.query(Facility).filter(Facility.id == facility_id).one().tg_id)
     return order_id
@@ -551,7 +551,7 @@ def update_order(order, order_id, user):
     order_obj.create_date = datetime.datetime.now()
     db.session.commit()
     if not user.is_admin:
-        bot.noti_admin(
+        notification_bot.noti_admin(
             f"{user.name} {user.surname} {'(' + db.session.query(Facility).filter(Facility.id == order_obj.facility_id).one().name + ')'} изменил заказ "
             f"#{order_obj.id}", db.session.query(Facility).filter(Facility.id == order_obj.facility_id).one().tg_id)
     return order_id
