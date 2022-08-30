@@ -54,7 +54,7 @@ function isInt(value) {
 function selectFacility(selector){
     var fac_id = $(selector).val();
 
-    window.location.href = "/?fid="+String(fac_id);
+    window.location.href = "?fid="+String(fac_id);
 }
 
 function addProduct(button, pid){
