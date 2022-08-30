@@ -531,13 +531,13 @@ def parse_order_products(order, order_id):
 
 
 def update_order(order, order_id, user):
-    if "Удалить" in order["order"].values():
+    if "Видалити" in order["order"].values():
         order_obj = db.session.query(Order).filter(Order.id == order_id).one()
         order_obj.deleted = True
         order_obj.delete_date = datetime.datetime.now()
         db.session.commit()
         return None
-    if "Восстановить" in order["order"].values():
+    if "Відновити" in order["order"].values():
         order_obj = db.session.query(Order).filter(Order.id == order_id).one()
         order_obj.deleted = False
         order_obj.delete_date = None
