@@ -29,8 +29,8 @@
                         {%endfor%}
                     </select>
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail1')">Показати товари</button>
-                <div hidden id = "detail1">
+                <button type="button" class="summary" onclick="toggleDetails(this)">Показати товари</button>
+                <div hidden class = "details">
 
                     <div id="new_order_placeholder">
 
@@ -83,8 +83,8 @@
                     {% endif %}
 
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail2')">Показати товари</button>
-                <div hidden id = "detail2">
+                <button type="button" class="summary" onclick="toggleDetails(this)">Показати товари</button>
+                <div hidden class = "details">
                     <div class="products">
                 {%for product in order.products%}
                 {%if product.amount %}
@@ -194,8 +194,8 @@
 
 
                 </div>
-                <button type="button" class="summary" onclick="toggleDetails(this, 'detail3')">Показати товари</button>
-                <div hidden id = "detail3">
+                <button type="button" class="summary" onclick="toggleDetails(this)">Показати товари</button>
+                <div hidden class = "details">
                     <div class="products">
                 {%for product in order.products%}
 
@@ -307,8 +307,8 @@
                     {% endif %}
 
                 </div>
-                <button  type="button" class="summary" onclick="toggleDetails(this, 'detail4')">Показати товари</button>
-                <div hidden id = "detail4">
+                <button  type="button" class="summary" onclick="toggleDetails(this)">Показати товари</button>
+                <div hidden class = "details">
                     <div class="products">
                 {%for product in order.products%}
 

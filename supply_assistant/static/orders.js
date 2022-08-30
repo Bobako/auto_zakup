@@ -102,13 +102,13 @@ function live_search(oid, field, e){
     $(wrapper).append(req.responseText);
 }
 
-function toggleDetails(button, did){
+function toggleDetails(button){
     if (button.innerHTML == "Показати товари"){
         $(button).html("Скрыть товари");
-        $("#"+did).removeAttr("hidden");
+        $(button).parent().find(".details").removeAttr("hidden");
     }
     else{
         $(button).html("Показати товари");
-        $("#"+did).attr("hidden", "");
+        $(button).parent().find(".details").attr("hidden", "");
     }
 }
