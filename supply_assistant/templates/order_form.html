@@ -2,22 +2,33 @@
 {%for product in vendor.products%}
 
 <input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Постачальник">
-<input class="col1" type="text" disabled name="NEW:vendor_name" value="{{vendor.name}}" placeholder="Постачальник">
+
+<select class="col1" name="NEW:vendor_id">
+    <option selected value="{{product.vendor_id}}">{{vendor.name}}</option>
+    {% for vendor in product.vendors %}
+    {% if vendor.id != product.vendor_id %}
+    <option value="{{vendor.id}}">{{vendor.name}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+
 
 <input type="text" hidden name="NEW:product_id" value="{{product.id}}" placeholder="Товар">
 <input class="col2" type="text" disabled name="NEW:product_name" value="{{product.name}}" placeholder="Товар">
 
-<input class="col3" type="number" step="any" name="NEW:amount" value="0" placeholder="Кількість" onchange="checkAmount(this)">
+<input class="col3" type="number" step="any" name="NEW:amount" value="0" placeholder="Кількість"
+       onchange="checkAmount(this)">
 
-<select name = "NEW:unit_id">
-    <option selected value="{{product.unit_id}}">{% if product.unit_id %} {{product.unit.designation}} {% endif %}</option>
+<select name="NEW:unit_id">
+    <option selected value="{{product.unit_id}}">{% if product.unit_id %} {{product.unit.designation}} {% endif %}
+    </option>
     {% for unit in units%}
     {% if unit.id != product.unit.id %}
     <option value="{{unit.id}}">{{unit.designation}}</option>
     {% endif %}
     {% endfor %}
 </select>
-<input type="checkbox"  checked name = "NEW:official" {% if not product.alco%} hidden {% endif %}>
+<input type="checkbox" checked name="NEW:official" {% if not product.alco%} hidden {% endif %}>
 <label {% if not product.alco%} hidden {% endif %}> Офіц.</label>
 <br>
 {%endfor%}
