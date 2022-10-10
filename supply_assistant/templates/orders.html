@@ -89,13 +89,14 @@
                 {%for product in order.products%}
                 {%if product.amount %}
                 <select class="col1" name="{{product.id}}:vendor_id">
-                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
-                    {% for vendor in product.product.vendors %}
-                    {% if vendor.id != product.vendor_id %}
-                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
+                            {% for vendor in all_vendors %}
+                            {% if vendor.id != product.vendor_id %}
+                            <option value="{{vendor.id}}">{{vendor.name}}</option>
+                            {%else%}
+                            <option selected value="{{vendor.id}}">{{vendor.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
 
                 <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
 
@@ -116,12 +117,14 @@
                 <br>
                 {%else%}
                 <select hidden class="col1 pid{{product.id}} space" name="{{product.id}}:vendor_id">
-                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
-                    {% for vendor in product.product.vendors %}
-                    {% if vendor.id != product.vendor_id %}
-                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
-                    {% endif %}
-                    {% endfor %}
+                            {% for vendor in all_vendors %}
+                            {% if vendor.id != product.vendor_id %}
+                            <option value="{{vendor.id}}">{{vendor.name}}</option>
+                            {%else%}
+                            <option selected value="{{vendor.id}}">{{vendor.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
                 </select>
 
                 <input class="col2 pid{{product.id}} space" hidden type="text" disabled value="{{product.product.name}}" placeholder="Товар">
@@ -201,12 +204,14 @@
 
                 {%if product.amount %}
                     <select class="col1" name="{{product.id}}:vendor_id">
-                    <option selected value="{{product.vendor_id}}">{{product.vendor.name}}</option>
-                    {% for vendor in product.product.vendors %}
-                    {% if vendor.id != product.vendor_id %}
-                        <option value ="{{vendor.id}}">{{vendor.name}} </option>
-                    {% endif %}
-                    {% endfor %}
+                            {% for vendor in all_vendors %}
+                            {% if vendor.id != product.vendor_id %}
+                            <option value="{{vendor.id}}">{{vendor.name}}</option>
+                            {%else%}
+                            <option selected value="{{vendor.id}}">{{vendor.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
                 </select>
                     <input class=" col2" type="text" disabled value="{{product.product.name}}" placeholder="Товар">
                     <input class=" col3" type="number" step="any" name="{{product.id}}:amount" value="{{product.amount}}"

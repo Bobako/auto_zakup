@@ -4,10 +4,11 @@
 <input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Постачальник">
 
 <select class="col1" name="NEW:vendor_id">
-    <option selected value="{{product.vendor_id}}">{{vendor.name}}</option>
-    {% for vendor in product.vendors %}
+    {% for vendor in all_vendors %}
     {% if vendor.id != product.vendor_id %}
     <option value="{{vendor.id}}">{{vendor.name}}</option>
+    {%else%}
+    <option selected value="{{vendor.id}}">{{vendor.name}}</option>
     {% endif %}
     {% endfor %}
 </select>

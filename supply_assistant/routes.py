@@ -450,7 +450,8 @@ def index():
                            products=products, days=["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
                            vendors=vendors, facilities=db.session.query(Facility).all(),
                            col1=col1, col2=col2, col3=col3, col4=col4, facility_id=int(facility_id),
-                           deleted_orders=get_deleted_orders(user), units=db.session.query(Unit).all())
+                           deleted_orders=get_deleted_orders(user), units=db.session.query(Unit).all(),
+                           all_vendors=db.session.query(Vendor).all())
 
 
 def get_orders(user):
@@ -512,11 +513,13 @@ def create_order(order, user):
 
 def parse_order_products(order, order_id):
     for product_id, product_dict in order.items():
-
+        print(product_dict)
         try:
             product_dict["amount"] = float(product_dict["amount"])
         except ValueError:
             product_dict["amount"] = 0.0
+        except KeyError:
+            continue
 
         if "NEW" in product_id:
             db.session.add(OrderedProduct(product_dict["product_id"], product_dict["amount"], product_dict["vendor_id"],
@@ -562,7 +565,8 @@ def get_available_products():
     facility_id = request.args.get('id')
     return render_template('order_form.html',
                            vendors=db.session.query(Facility).filter(Facility.id == facility_id).one().vendors,
-                           units=db.session.query(Unit).all())
+                           units=db.session.query(Unit).all(),
+                           all_vendors=db.session.query(Vendor).all())
 
 
 @app.route("/api/formatted_order", methods=['get'])
