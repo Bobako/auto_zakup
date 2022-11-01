@@ -71,7 +71,6 @@ def users_page():
                 facilities = []
                 for key in user.keys():
                     if 'fid_' in key:
-                        print(key)
                         facility_id = int(key.replace('fid_', ''))
                         facilities.append(db.session.query(Facility).filter(Facility.id == facility_id).one())
                 user["facilities"] = facilities
@@ -513,7 +512,6 @@ def create_order(order, user):
 
 def parse_order_products(order, order_id):
     for product_id, product_dict in order.items():
-        print(product_dict)
         try:
             product_dict["amount"] = float(product_dict["amount"])
         except ValueError:

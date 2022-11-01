@@ -1,8 +1,6 @@
 {%for vendor in vendors%}
 {%for product in vendor.products%}
 
-<input type="text" hidden name="NEW:vendor_id" value="{{vendor.id}}" placeholder="Постачальник">
-
 <select class="col1" name="NEW:vendor_id">
     {% for vendor in all_vendors %}
     {% if vendor.id != product.vendor_id %}
