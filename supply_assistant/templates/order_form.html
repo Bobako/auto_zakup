@@ -2,12 +2,9 @@
 {%for product in vendor.products%}
 
 <select class="col1" name="NEW:vendor_id">
-    {% for vendor in all_vendors %}
-    {% if vendor.id != product.vendor_id %}
-    <option value="{{vendor.id}}">{{vendor.name}}</option>
-    {%else%}
     <option selected value="{{vendor.id}}">{{vendor.name}}</option>
-    {% endif %}
+    {% for all_vendor in all_vendors %}
+    {%if all_vendor.id != vendor.id%} <option value="{{all_vendor.id}}">{{all_vendor.name}}</option>{%endif%}
     {% endfor %}
 </select>
 
